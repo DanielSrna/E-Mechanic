@@ -1,0 +1,52 @@
+# ==========================================
+# DEPENDENCIAS
+# ==========================================
+# Nunca se sube. Quien clone el repo debe hacer 'npm install'
+node_modules/
+
+# ==========================================
+# VARIABLES DE ENTORNO Y SECRETOS
+# ==========================================
+# CRÍTICO: Aquí viven tus contraseñas de BD y secretos JWT
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# ==========================================
+# LOGS (Winston / Sistema)
+# ==========================================
+# Evita subir los archivos de texto que Winston generará con los errores
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ==========================================
+# ARCHIVOS DE USUARIO Y SUBIDAS (Multer)
+# ==========================================
+# No queremos subir al repositorio las fotos de las motos que se ingresen al taller
+src/public/uploads/
+uploads/
+
+# ==========================================
+# TESTING (Jest)
+# ==========================================
+# Archivos autogenerados al correr pruebas de cobertura
+coverage/
+.nyc_output/
+
+# ==========================================
+# ARCHIVOS DEL SISTEMA OPERATIVO
+# ==========================================
+# Archivos basura de Mac y distribuciones Linux
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*~
