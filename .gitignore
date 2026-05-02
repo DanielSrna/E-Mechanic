@@ -50,3 +50,9 @@ coverage/
 ehthumbs.db
 Thumbs.db
 *~
+
+# ==========================================
+# OTROS
+# ==========================================
+# Archivos de configuración de editores y herramientas
+E-Mechanic/
