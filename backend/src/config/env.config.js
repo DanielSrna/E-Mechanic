@@ -6,6 +6,7 @@ logger.proceso("Validando variables de entorno...");
 
 // 1. Definimos cómo deben verse nuestras variables de entorno
 const envSchema = z.object({
+    BCRYPT_SALT_ROUNDS: z.coerce.number().int().positive().default(10),
     PORT: z.string().default("3000"),
     MONGODB_URL: z.string().url("El MONGODB_URL debe ser una conexión válida"),
     NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
