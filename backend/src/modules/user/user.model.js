@@ -46,23 +46,21 @@ const userSchema = new mongoose.Schema({
 *======================*/
 
 // Middleware para capitalizar el nombre antes de guardarlo
-userSchema.pre('save', function (next) {
+userSchema.pre('save', function () {
     if (this.name) {
         this.name = this.name
             .split(' ')
             .map(word => word.charAt(0).toUpperCase() + word.slice(1))
             .join(' ');
     }
-    next();
 });
 
 // Middleware para encriptar la contraseña antes de guardarla
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function () {
     if (this.isModified('password')) {
         const salt = await bcrypt.genSalt(env.BCRYPT_SALT_ROUNDS);
         this.password = await bcrypt.hash(this.password, salt);
     }
-    next();
 });
 
 /*=======================

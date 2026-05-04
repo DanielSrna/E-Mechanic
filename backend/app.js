@@ -6,6 +6,8 @@ import cors from "cors";
 import logger from "./src/utils/logger.js";
 const app = express();
 
+import userRoutes from "./src/modules/user/user.routes.js";
+
 // Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -19,6 +21,7 @@ app.use(cookieParser());
 
 
 // Routes
+app.use('/api/users', userRoutes);
 
 // Manejador global de errores
 app.use((error, req, res, next) => {
