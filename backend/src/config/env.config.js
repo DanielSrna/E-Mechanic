@@ -11,7 +11,10 @@ const envSchema = z.object({
     MONGODB_URL: z.string().url("El MONGODB_URL debe ser una conexión válida"),
     NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
     FRONTEND_URL: z.string().url("El FRONTEND_URL debe ser una URL válida"),
-    // Aquí añadiremos más adelante: JWT_SECRET: z.string().min(10)
+    JWT_SECRET: z.string().min(10),
+    JWT_SECRET_EXPIRES_IN: z.string().default("1d"),
+    JWT_REFRESH_SECRET: z.string().min(10),
+    JWT_REFRESH_SECRET_EXPIRES_IN: z.string().default("7d")
 });
 
 // 2. Comparamos el esquema con lo que realmente hay en process.env

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
-import { env } from "../../config/env.config.js";
+import { env } from "../config/env.config.js";
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -13,14 +13,12 @@ const userSchema = new mongoose.Schema({
     cedula: {
         type: String,
         required: true,
-        unique: true,
         trim: true,
         match: /^[0-9]{6,10}$/,
     },
     email: {
         type: String,
         required: true,
-        unique: true,
         lowercase: true,
         trim: true,
         match: /.+\@.+\..+/,
@@ -66,11 +64,23 @@ userSchema.pre('save', async function () {
 /*=======================
 *        Metodos
 *======================*/
+
 // Método para comparar contraseñas
 userSchema.methods.comparePassword = async function (candidatePassword) {
     return await bcrypt.compare(candidatePassword, this.password);
 };
 
-const User = mongoose.model('User', userSchema);
+// Método para crear un nuevo usuario
+userSchema.statics.newUser = async function (userData) {
+    const user = new this(userData);
+    return await user.save();
+};
 
+/*=======================
+*    Composición final
+*======================*/
+
+userSchema.index({ email: 1 }, { unique: true });
+userSchema.index({ cedula: 1 }, { unique: true });
+const User = mongoose.model('User', userSchema);
 export default User;

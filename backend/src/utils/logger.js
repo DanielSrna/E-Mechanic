@@ -21,16 +21,18 @@ const customLevels = {
   levels: {
     fracaso: 0,
     exito: 1,
-    proceso: 2
+    proceso: 2,
+    contexto: 3
   },
   colors: {
     fracaso: 'red',
     exito: 'green',
-    proceso: 'cyan' // Lo más cercano al azul celeste nativo
+    proceso: 'cyan', 
+    contexto: 'magenta'
   }
 };
 
-// 1. Indicarle a Winston que registre nuestros colores personalizados
+// Indicarle a Winston que registre nuestros colores personalizados
 winston.addColors(customLevels.colors);
 
 const logger = winston.createLogger({
@@ -44,13 +46,12 @@ const logger = winston.createLogger({
   transports: [
     // Transporte de Consola
     new winston.transports.Console({
-      level: isProduction ? 'exito' : 'proceso',
+      // 3. Ajustamos para que en desarrollo escuche hasta el nivel 'contexto'
+      level: isProduction ? 'exito' : 'contexto',
       format: winston.format.combine(
-        // 2. Aplicar la colorización de Winston
         winston.format.colorize({ all: true }), 
         winston.format.timestamp({ format: 'HH:mm:ss' }),
         winston.format.printf(({ level, message, timestamp }) => {
-          // El nivel y el mensaje ya vendrán coloreados gracias a colorize()
           return `${timestamp} [${level}]: ${message}`;
         })
       )
