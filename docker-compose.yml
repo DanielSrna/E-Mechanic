@@ -1,0 +1,33 @@
+services:
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: emechanic-api
+    ports:
+      - "${PORT:-3000}:3000"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - mongo
+    restart: unless-stopped
+    networks:
+      - emechanic-network
+
+  mongo:
+    image: mongo:8
+    container_name: emechanic-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    restart: unless-stopped
+    networks:
+      - emechanic-network
+
+networks:
+  emechanic-network:
+    driver: bridge
+
+volumes:
+  mongo-data:

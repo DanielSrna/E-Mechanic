@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-const MONGODB_URL = process.env.MONGODB_URL || 'mongodb://localhost:27017/emechanic';
+import { env } from './env.config.js';
 
 export const connectDB = async () => {
-    await mongoose.connect(MONGODB_URL)
-}
+  await mongoose.connect(env.MONGODB_URL);
+};
