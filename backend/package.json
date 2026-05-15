@@ -7,7 +7,9 @@
     "start": "node server.js",
     "dev": "node --watch server.js",
     "lint": "eslint .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --experimental-vm-modules node_modules/.bin/jest --coverage",
+    "test:watch": "node --experimental-vm-modules node_modules/.bin/jest --watch",
+    "test:integration": "node --experimental-vm-modules node_modules/.bin/jest --testPathPattern='__tests__/integration/'"
   },
   "keywords": [],
   "author": "",
@@ -19,7 +21,10 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
     "globals": "^17.6.0",
-    "prettier": "^3.8.3"
+    "jest": "^30.4.2",
+    "mongodb-memory-server": "^11.1.0",
+    "prettier": "^3.8.3",
+    "supertest": "^7.2.2"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
