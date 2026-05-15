@@ -44,9 +44,7 @@ const logger = winston.createLogger({
     winston.format.json()
   ),
   transports: [
-    // Transporte de Consola
     new winston.transports.Console({
-      // 3. Ajustamos para que en desarrollo escuche hasta el nivel 'contexto'
       level: isProduction ? 'exito' : 'contexto',
       format: winston.format.combine(
         winston.format.colorize({ all: true }),
@@ -56,14 +54,17 @@ const logger = winston.createLogger({
         })
       ),
     }),
-    // Transporte de Archivo (Se mantiene igual)
-    new winston.transports.File({
-      filename: path.join(__dirname, '../logs/app.log'),
-      level: 'fracaso',
-      maxFiles: 50,
-      maxsize: 5242880,
-      tailable: true,
-    }),
+    ...(isProduction
+      ? []
+      : [
+          new winston.transports.File({
+            filename: path.join(__dirname, '../logs/app.log'),
+            level: 'fracaso',
+            maxFiles: 50,
+            maxsize: 5242880,
+            tailable: true,
+          }),
+        ]),
   ],
 });
 

@@ -1,5 +1,6 @@
 import { env } from './src/config/env.config.js';
 import logger from './src/utils/logger.js';
+import mongoose from 'mongoose';
 import app from './app.js';
 import { connectDB } from './src/config/db.config.js';
 
@@ -10,8 +11,30 @@ try {
   await connectDB();
   logger.exito('Conexión a MongoDB Atlas establecida.');
 
-  app.listen(PORT, () => {
-    logger.exito('Servidor conectado, y escuchando en el puerto %d', PORT);
+  const server = app.listen(PORT, '0.0.0.0', () => {
+    logger.exito(
+      'Servidor escuchando en 0.0.0.0:%d | Entorno: %s',
+      PORT,
+      env.NODE_ENV
+    );
+  });
+
+  process.on('SIGTERM', async () => {
+    logger.proceso('SIGTERM recibido. Cerrando conexiones limpiamente...');
+    server.close(async () => {
+      logger.exito('Servidor HTTP cerrado');
+      await mongoose.disconnect();
+      logger.exito('Conexión a MongoDB cerrada');
+      process.exit(0);
+    });
+  });
+
+  process.on('SIGINT', async () => {
+    logger.proceso('SIGINT recibido. Cerrando...');
+    server.close(async () => {
+      await mongoose.disconnect();
+      process.exit(0);
+    });
   });
 } catch (error) {
   logger.fracaso('Error al conectar a la base de datos: %s', error.message);

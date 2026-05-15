@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import logger from './src/utils/logger.js';
+import { env } from './src/config/env.config.js';
 import { swaggerSpec } from './src/config/swagger.config.js';
 import { generalLimiter } from './src/middlewares/rateLimiter.middleware.js';
 
@@ -20,7 +21,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    origin: env.FRONTEND_URL.split(',').map((s) => s.trim()),
     credentials: true,
   })
 );
@@ -29,8 +30,19 @@ app.use(hpp());
 app.use(cookieParser());
 app.use(generalLimiter);
 
-// Swagger
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// Swagger (solo development)
+if (env.NODE_ENV === 'development') {
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+}
+
+// Health check
+app.get('/', (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+  });
+});
 
 // Routes
 app.use('/api/users', userRoutes);

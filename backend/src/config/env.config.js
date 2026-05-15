@@ -12,7 +12,7 @@ const envSchema = z.object({
   NODE_ENV: z
     .enum(['development', 'production', 'test'])
     .default('development'),
-  FRONTEND_URL: z.string().url('El FRONTEND_URL debe ser una URL válida'),
+  FRONTEND_URL: z.string().default('http://localhost:5173'),
   JWT_SECRET: z.string().min(10),
   JWT_SECRET_EXPIRES_IN: z.string().default('1d'),
   JWT_REFRESH_SECRET: z.string().min(10),
