@@ -3,6 +3,7 @@ import logger from './src/utils/logger.js';
 import mongoose from 'mongoose';
 import app from './app.js';
 import { connectDB } from './src/config/db.config.js';
+import './src/events/listeners/order.listeners.js';
 
 const PORT = env.PORT;
 

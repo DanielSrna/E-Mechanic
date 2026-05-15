@@ -19,6 +19,10 @@ const envSchema = z.object({
   JWT_REFRESH_SECRET_EXPIRES_IN: z.string().default('7d'),
   STRIPE_SECRET_KEY: z.string().optional(),
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
+  SMTP_HOST: z.string().optional(),
+  SMTP_PORT: z.coerce.number().int().positive().optional(),
+  SMTP_USER: z.string().optional(),
+  SMTP_PASS: z.string().optional(),
 });
 
 // 2. Comparamos el esquema con lo que realmente hay en process.env
