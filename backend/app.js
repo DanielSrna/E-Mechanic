@@ -11,6 +11,8 @@ import { generalLimiter } from './src/middlewares/rateLimiter.middleware.js';
 const app = express();
 
 import userRoutes from './src/routes/user.routes.js';
+import clientRoutes from './src/routes/client.routes.js';
+import motorcycleRoutes from './src/routes/motorcycle.routes.js';
 
 // Middlewares
 app.use(express.json());
@@ -31,6 +33,8 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Routes
 app.use('/api/users', userRoutes);
+app.use('/api/clients', clientRoutes);
+app.use('/api/motorcycles', motorcycleRoutes);
 
 // Manejador global de errores
 app.use((error, req, res, _next) => {
