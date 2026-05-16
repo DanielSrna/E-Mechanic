@@ -5,8 +5,20 @@ import Header from './Header';
 import { useState } from 'react';
 
 export default function Layout() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-slate-50">
+        <div className="text-center">
+          <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-slate-500 text-sm">Cargando...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!user) return <Navigate to="/login" />;
 
   return (

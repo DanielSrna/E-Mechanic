@@ -77,8 +77,9 @@ export async function uploadFile(fileBuffer, originalName, subdir) {
 
   const localPath = getLocalPath(subdir, filename);
   fs.writeFileSync(localPath, fileBuffer);
-  logger.exito('Archivo guardado localmente: %s', localPath);
-  return localPath;
+  const relativeUrl = `/uploads/${subdir}/${filename}`;
+  logger.exito('Archivo guardado localmente: %s', relativeUrl);
+  return relativeUrl;
 }
 
 export async function deleteFile(filePath) {
@@ -99,9 +100,12 @@ export async function deleteFile(filePath) {
   }
 
   try {
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
-      logger.exito('Archivo eliminado localmente: %s', filePath);
+    const absolutePath = filePath.startsWith('/uploads/')
+      ? path.join(__dirname, '../../', filePath)
+      : filePath;
+    if (fs.existsSync(absolutePath)) {
+      fs.unlinkSync(absolutePath);
+      logger.exito('Archivo eliminado localmente: %s', absolutePath);
     }
   } catch {
     /* file may not exist */

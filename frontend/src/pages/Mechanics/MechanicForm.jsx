@@ -5,11 +5,17 @@ import toast from 'react-hot-toast';
 
 export default function MechanicForm() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: '', email: '', cedula: '', password: '', rol: 'mecanico' });
+  const [form, setForm] = useState({
+    name: '', email: '', cedula: '', password: '', passwordConfirmation: '', rol: 'mecanico',
+  });
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (form.password !== form.passwordConfirmation) {
+      toast.error('Las contraseñas no coinciden');
+      return;
+    }
     setLoading(true);
     try {
       await api.post('/users', form);
@@ -32,6 +38,7 @@ export default function MechanicForm() {
         <Field label="Email *" type="email" value={form.email} onChange={v => update('email', v)} />
         <Field label="Cédula *" value={form.cedula} onChange={v => update('cedula', v)} placeholder="1234567890" />
         <Field label="Contraseña *" type="password" value={form.password} onChange={v => update('password', v)} placeholder="Mínimo 6 caracteres" />
+        <Field label="Confirmar contraseña *" type="password" value={form.passwordConfirmation} onChange={v => update('passwordConfirmation', v)} placeholder="Repite la contraseña" />
         <div>
           <label className="block text-sm font-medium text-slate-600 mb-1">Rol</label>
           <select value={form.rol} onChange={e => update('rol', e.target.value)}
