@@ -1,6 +1,6 @@
 import Settings from '../models/settings.model.js';
 import logger from '../utils/logger.js';
-import fs from 'fs';
+import { deleteFile } from '../services/storage.service.js';
 
 export const getSettings = async (req, res, next) => {
   logger.contexto('Iniciando controlador getSettings');
@@ -57,27 +57,23 @@ export const uploadLogo = async (req, res, next) => {
   logger.contexto('Iniciando controlador uploadLogo');
 
   try {
-    if (!req.file) {
+    if (!req.uploadedFileUrl) {
       return res.status(400).json({ message: 'No se recibió ninguna imagen' });
     }
 
     const settings = await Settings.getSettings();
 
     if (settings.logo) {
-      try {
-        fs.unlinkSync(settings.logo);
-      } catch {
-        /* file may not exist */
-      }
+      await deleteFile(settings.logo);
     }
 
-    settings.logo = req.file.path;
+    settings.logo = req.uploadedFileUrl;
     await settings.save();
 
-    logger.exito('Logo actualizado: %s', req.file.filename);
+    logger.exito('Logo actualizado: %s', settings.logo);
     res.status(200).json({
       message: 'Logo uploaded successfully',
-      logo: `/uploads/logos/${req.file.filename}`,
+      logo: settings.logo,
     });
   } catch (error) {
     logger.fracaso('Error al subir logo: ', error);

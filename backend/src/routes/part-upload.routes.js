@@ -4,38 +4,10 @@ import Part from '../models/part.model.js';
 import logger from '../utils/logger.js';
 import { verifyToken, requireRole } from '../middlewares/auth.middleware.js';
 import { uploadSingle } from '../middlewares/upload.middleware.js';
-import fs from 'fs';
+import { deleteFile } from '../services/storage.service.js';
 
 router.use(verifyToken);
 
-/**
- * @swagger
- * /api/parts/{id}/image:
- *   post:
- *     summary: Subir imagen del repuesto
- *     tags: [Inventory]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     requestBody:
- *       required: true
- *       content:
- *         multipart/form-data:
- *           schema:
- *             type: object
- *             properties:
- *               image:
- *                 type: string
- *                 format: binary
- *     responses:
- *       200:
- *         description: Imagen actualizada
- */
 router.post(
   '/:id/image',
   requireRole('admin'),
@@ -46,14 +18,10 @@ router.post(
       if (!part) return res.status(404).json({ message: 'Part not found' });
 
       if (part.image) {
-        try {
-          fs.unlinkSync(part.image);
-        } catch {
-          /* old image may not exist */
-        }
+        await deleteFile(part.image);
       }
 
-      part.image = req.file.path;
+      part.image = req.uploadedFileUrl;
       await part.save();
 
       logger.exito('Imagen de repuesto actualizada: %s', part.name);

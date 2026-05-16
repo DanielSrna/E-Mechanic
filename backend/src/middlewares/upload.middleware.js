@@ -1,15 +1,5 @@
 import multer from 'multer';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import fs from 'fs';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const uploadsDir = path.join(__dirname, '../../uploads');
-
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
+import { uploadFile } from '../services/storage.service.js';
 
 const ALLOWED_MIMES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
@@ -27,7 +17,6 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
 function checkMagicNumbers(buffer) {
   if (buffer.length < 12) return false;
-
   const bytes = (i) => buffer[i];
 
   if (
@@ -67,26 +56,12 @@ function checkMagicNumbers(buffer) {
   return false;
 }
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const subdir = req.uploadSubdir || '';
-    const dest = path.join(uploadsDir, subdir);
-    if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
-    cb(null, dest);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    const ext = path.extname(file.originalname).toLowerCase();
-    cb(null, `${uniqueSuffix}${ext}`);
-  },
-});
+const memoryStorage = multer.memoryStorage();
 
 export const uploadSingle = (fieldName, subdir = '') => {
   return (req, res, next) => {
-    req.uploadSubdir = subdir;
-
     const upload = multer({
-      storage,
+      storage: memoryStorage,
       limits: { fileSize: MAX_FILE_SIZE },
       fileFilter: (req, file, cb) => {
         if (!ALLOWED_MIMES.includes(file.mimetype)) {
@@ -100,38 +75,44 @@ export const uploadSingle = (fieldName, subdir = '') => {
       },
     }).single(fieldName);
 
-    upload(req, res, (err) => {
+    upload(req, res, async (err) => {
       if (err) {
         if (err.code === 'LIMIT_FILE_SIZE') {
-          return res.status(400).json({
-            message: 'El archivo excede el tamaño máximo de 5MB.',
-          });
+          return res
+            .status(400)
+            .json({ message: 'El archivo excede el tamaño máximo de 5MB.' });
         }
         return res.status(400).json({ message: err.message });
       }
 
-      if (req.file) {
-        const buffer = fs.readFileSync(req.file.path);
-        if (!checkMagicNumbers(buffer)) {
-          fs.unlinkSync(req.file.path);
-          return res.status(400).json({
-            message:
-              'El archivo no es una imagen válida. Se detectó firma incorrecta.',
-          });
-        }
+      if (!req.file) return next();
+
+      if (!checkMagicNumbers(req.file.buffer)) {
+        return res.status(400).json({
+          message:
+            'El archivo no es una imagen válida. Se detectó firma incorrecta.',
+        });
       }
 
-      next();
+      try {
+        const url = await uploadFile(
+          req.file.buffer,
+          req.file.originalname,
+          subdir
+        );
+        req.uploadedFileUrl = url;
+        next();
+      } catch {
+        return res.status(500).json({ message: 'Error al guardar la imagen' });
+      }
     });
   };
 };
 
 export const uploadMultiple = (fieldName, maxCount = 5, subdir = '') => {
   return (req, res, next) => {
-    req.uploadSubdir = subdir;
-
     const upload = multer({
-      storage,
+      storage: memoryStorage,
       limits: { fileSize: MAX_FILE_SIZE },
       fileFilter: (req, file, cb) => {
         if (!ALLOWED_MIMES.includes(file.mimetype)) {
@@ -145,35 +126,45 @@ export const uploadMultiple = (fieldName, maxCount = 5, subdir = '') => {
       },
     }).array(fieldName, maxCount);
 
-    upload(req, res, (err) => {
+    upload(req, res, async (err) => {
       if (err) {
         if (err.code === 'LIMIT_FILE_SIZE') {
-          return res.status(400).json({
-            message: 'El archivo excede el tamaño máximo de 5MB.',
-          });
+          return res
+            .status(400)
+            .json({ message: 'El archivo excede el tamaño máximo de 5MB.' });
         }
         if (err.code === 'LIMIT_FILE_COUNT') {
-          return res.status(400).json({
-            message: `Máximo ${maxCount} archivos permitidos.`,
-          });
+          return res
+            .status(400)
+            .json({ message: `Máximo ${maxCount} archivos permitidos.` });
         }
         return res.status(400).json({ message: err.message });
       }
 
-      if (req.files && req.files.length) {
-        for (const file of req.files) {
-          const buffer = fs.readFileSync(file.path);
-          if (!checkMagicNumbers(buffer)) {
-            for (const f of req.files) fs.unlinkSync(f.path);
-            return res.status(400).json({
-              message:
-                'Uno de los archivos no es una imagen válida. Se detectó firma incorrecta.',
-            });
-          }
+      if (!req.files || req.files.length === 0) return next();
+
+      for (const file of req.files) {
+        if (!checkMagicNumbers(file.buffer)) {
+          return res.status(400).json({
+            message:
+              'Uno de los archivos no es una imagen válida. Se detectó firma incorrecta.',
+          });
         }
       }
 
-      next();
+      try {
+        const urls = [];
+        for (const file of req.files) {
+          const url = await uploadFile(file.buffer, file.originalname, subdir);
+          urls.push(url);
+        }
+        req.uploadedFileUrls = urls;
+        next();
+      } catch {
+        return res
+          .status(500)
+          .json({ message: 'Error al guardar las imágenes' });
+      }
     });
   };
 };

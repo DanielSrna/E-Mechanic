@@ -4,7 +4,7 @@ import Motorcycle from '../models/motorcycle.model.js';
 import logger from '../utils/logger.js';
 import { verifyToken, requireRole } from '../middlewares/auth.middleware.js';
 import { uploadMultiple } from '../middlewares/upload.middleware.js';
-import fs from 'fs';
+import { deleteFile } from '../services/storage.service.js';
 
 router.use(verifyToken);
 
@@ -48,7 +48,7 @@ router.post(
       if (!motorcycle)
         return res.status(404).json({ message: 'Motorcycle not found' });
 
-      const newImages = req.files.map((f) => f.path);
+      const newImages = req.uploadedFileUrls || [];
       motorcycle.images = [...motorcycle.images, ...newImages];
       await motorcycle.save();
 
@@ -103,11 +103,7 @@ router.delete(
       }
 
       const removed = motorcycle.images.splice(index, 1)[0];
-      try {
-        fs.unlinkSync(removed);
-      } catch {
-        /* file may not exist */
-      }
+      await deleteFile(removed);
       await motorcycle.save();
 
       logger.exito('Imagen eliminada de moto %s', motorcycle.plate);
