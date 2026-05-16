@@ -1,4 +1,11 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from '@jest/globals';
+import {
+  describe,
+  it,
+  expect,
+  beforeAll,
+  afterAll,
+  beforeEach,
+} from '@jest/globals';
 import request from 'supertest';
 import User from '../../models/user.model.js';
 import Client from '../../models/client.model.js';
@@ -10,9 +17,12 @@ let adminToken;
 beforeAll(async () => {
   await setupTestDB();
   app = (await import('../../../app.js')).default;
-  const admin = await User.create({
-    name: 'Admin', email: 'admin.clients@test.dev', cedula: '8888999900',
-    password: 'admin123', rol: 'admin',
+  await User.create({
+    name: 'Admin',
+    email: 'admin.clients@test.dev',
+    cedula: '8888999900',
+    password: 'admin123',
+    rol: 'admin',
   });
   const login = await request(app)
     .post('/api/users/login')
@@ -41,8 +51,10 @@ describe('Clients API', () => {
         .post('/api/clients')
         .set('Authorization', `Bearer ${adminToken}`)
         .send({
-          name: 'ana garcia', phone: '3102223344',
-          email: 'ana@test.com', address: 'Calle 123',
+          name: 'ana garcia',
+          phone: '3102223344',
+          email: 'ana@test.com',
+          address: 'Calle 123',
         });
       expect(res.status).toBe(201);
       expect(res.body.client.email).toBe('ana@test.com');
@@ -60,7 +72,11 @@ describe('Clients API', () => {
 
   describe('GET /api/clients', () => {
     beforeEach(async () => {
-      await Client.create({ name: 'Pedro', phone: '3001111111', email: 'pedro@test.com' });
+      await Client.create({
+        name: 'Pedro',
+        phone: '3001111111',
+        email: 'pedro@test.com',
+      });
       await Client.create({ name: 'Maria', phone: '3002222222' });
     });
 

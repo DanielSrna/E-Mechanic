@@ -37,6 +37,10 @@ const motorcycleSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+    images: {
+      type: [String],
+      default: [],
+    },
   },
   { timestamps: true }
 );

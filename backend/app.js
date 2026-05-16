@@ -3,11 +3,16 @@ import helmet from 'helmet';
 import hpp from 'hpp';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import swaggerUi from 'swagger-ui-express';
 import logger from './src/utils/logger.js';
 import { env } from './src/config/env.config.js';
 import { swaggerSpec } from './src/config/swagger.config.js';
 import { generalLimiter } from './src/middlewares/rateLimiter.middleware.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -16,7 +21,10 @@ import clientRoutes from './src/routes/client.routes.js';
 import motorcycleRoutes from './src/routes/motorcycle.routes.js';
 import orderRoutes from './src/routes/order.routes.js';
 import partRoutes from './src/routes/part.routes.js';
+import partUploadRoutes from './src/routes/part-upload.routes.js';
+import motoUploadRoutes from './src/routes/moto-upload.routes.js';
 import statsRoutes from './src/routes/stats.routes.js';
+import settingsRoutes from './src/routes/settings.routes.js';
 
 // Middlewares
 app.use(express.json());
@@ -31,6 +39,9 @@ app.use(helmet());
 app.use(hpp());
 app.use(cookieParser());
 app.use(generalLimiter);
+
+// Static files (uploads)
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Swagger (solo development)
 if (env.NODE_ENV === 'development') {
@@ -49,10 +60,13 @@ app.get('/', (req, res) => {
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/clients', clientRoutes);
+app.use('/api/motorcycles', motoUploadRoutes);
 app.use('/api/motorcycles', motorcycleRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/parts', partUploadRoutes);
 app.use('/api/parts', partRoutes);
 app.use('/api/stats', statsRoutes);
+app.use('/api/settings', settingsRoutes);
 
 // Manejador global de errores
 app.use((error, req, res, _next) => {

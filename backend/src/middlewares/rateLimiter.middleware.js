@@ -7,8 +7,7 @@ export const generalLimiter = rateLimit({
   legacyHeaders: false,
   message: {
     status: 429,
-    message:
-      'Demasiadas peticiones. Intenta de nuevo en 15 minutos.',
+    message: 'Demasiadas peticiones. Intenta de nuevo en 15 minutos.',
   },
 });
 

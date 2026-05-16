@@ -46,6 +46,10 @@ const partSchema = new mongoose.Schema(
       default: 5,
       min: 0,
     },
+    image: {
+      type: String,
+      default: null,
+    },
   },
   { timestamps: true }
 );

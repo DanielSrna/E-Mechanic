@@ -1,4 +1,11 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from '@jest/globals';
+import {
+  describe,
+  it,
+  expect,
+  beforeAll,
+  afterAll,
+  beforeEach,
+} from '@jest/globals';
 import request from 'supertest';
 import User from '../../models/user.model.js';
 import Client from '../../models/client.model.js';
@@ -18,8 +25,11 @@ beforeAll(async () => {
   app = (await import('../../../app.js')).default;
 
   const admin = await User.create({
-    name: 'Admin', email: 'admin.order@test.dev', cedula: '8888888888',
-    password: 'admin123', rol: 'admin',
+    name: 'Admin',
+    email: 'admin.order@test.dev',
+    cedula: '8888888888',
+    password: 'admin123',
+    rol: 'admin',
   });
   const login = await request(app)
     .post('/api/users/login')
@@ -28,19 +38,29 @@ beforeAll(async () => {
   adminId = admin._id.toString();
 
   const client = await Client.create({
-    name: 'Order Client', phone: '3005555555',
+    name: 'Order Client',
+    phone: '3005555555',
   });
   clientId = client._id;
 
   const moto = await Motorcycle.create({
-    plate: 'ORD001', brand: 'Honda', model: 'CB 150',
-    year: 2024, mileage: 1000, client: clientId,
+    plate: 'ORD001',
+    brand: 'Honda',
+    model: 'CB 150',
+    year: 2024,
+    mileage: 1000,
+    client: clientId,
   });
   motorcycleId = moto._id;
 
   const part = await Part.create({
-    sku: 'OIL-HONDA', name: 'Aceite Honda', brand: 'Honda',
-    purchasePrice: 20000, salePrice: 40000, stock: 20, minStock: 5,
+    sku: 'OIL-HONDA',
+    name: 'Aceite Honda',
+    brand: 'Honda',
+    purchasePrice: 20000,
+    salePrice: 40000,
+    stock: 20,
+    minStock: 5,
   });
   partId = part._id;
 }, 30000);
@@ -113,7 +133,10 @@ describe('Orders API', () => {
 
     it('recorre todo el flujo hasta lista_entrega', async () => {
       const transitions = [
-        'en_revision', 'esperando_aprobacion', 'en_reparacion', 'lista_entrega',
+        'en_revision',
+        'esperando_aprobacion',
+        'en_reparacion',
+        'lista_entrega',
       ];
       for (const status of transitions) {
         const res = await request(app)
@@ -192,7 +215,10 @@ describe('Orders API', () => {
         .send({ description: 'MO 2', cost: 30000 });
 
       const transitions = [
-        'en_revision', 'esperando_aprobacion', 'en_reparacion', 'lista_entrega',
+        'en_revision',
+        'esperando_aprobacion',
+        'en_reparacion',
+        'lista_entrega',
       ];
       for (const status of transitions) {
         await request(app)
@@ -223,7 +249,12 @@ describe('Orders API', () => {
         });
       const oid = res.body.order._id;
 
-      for (const status of ['en_revision', 'esperando_aprobacion', 'en_reparacion', 'lista_entrega']) {
+      for (const status of [
+        'en_revision',
+        'esperando_aprobacion',
+        'en_reparacion',
+        'lista_entrega',
+      ]) {
         await request(app)
           .put(`/api/orders/${oid}/status`)
           .set('Authorization', `Bearer ${adminToken}`)

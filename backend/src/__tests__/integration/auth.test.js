@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from '@jest/globals';
+import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 import request from 'supertest';
 import User from '../../models/user.model.js';
 import { setupTestDB, teardownTestDB } from '../test-helper.js';
@@ -17,57 +17,65 @@ afterAll(async () => {
 describe('Auth API', () => {
   describe('POST /api/users/registro', () => {
     it('crea un usuario y retorna 201', async () => {
-      const res = await request(app)
-        .post('/api/users/registro')
-        .send({
-          name: 'Test User',
-          email: 'test@test.com',
-          cedula: '1234567890',
-          password: 'test123',
-          passwordConfirmation: 'test123',
-        });
+      const res = await request(app).post('/api/users/registro').send({
+        name: 'Test User',
+        email: 'test@test.com',
+        cedula: '1234567890',
+        password: 'test123',
+        passwordConfirmation: 'test123',
+      });
       expect(res.status).toBe(201);
       expect(res.body.user.email).toBe('test@test.com');
       expect(res.body.user.name).toBe('Test User');
     });
 
     it('capitaliza el nombre automáticamente', async () => {
-      const res = await request(app)
-        .post('/api/users/registro')
-        .send({
-          name: 'juan perez',
-          email: 'juan@test.com',
-          cedula: '1234567891',
-          password: 'test123',
-          passwordConfirmation: 'test123',
-        });
+      const res = await request(app).post('/api/users/registro').send({
+        name: 'juan perez',
+        email: 'juan@test.com',
+        cedula: '1234567891',
+        password: 'test123',
+        passwordConfirmation: 'test123',
+      });
       expect(res.body.user.name).toBe('Juan Perez');
     });
 
     it('rechaza email duplicado con 400', async () => {
       await request(app).post('/api/users/registro').send({
-        name: 'First', email: 'dup@test.com', cedula: '1111111111',
-        password: 'test123', passwordConfirmation: 'test123',
+        name: 'First',
+        email: 'dup@test.com',
+        cedula: '1111111111',
+        password: 'test123',
+        passwordConfirmation: 'test123',
       });
       const res = await request(app).post('/api/users/registro').send({
-        name: 'Second', email: 'dup@test.com', cedula: '2222222222',
-        password: 'test123', passwordConfirmation: 'test123',
+        name: 'Second',
+        email: 'dup@test.com',
+        cedula: '2222222222',
+        password: 'test123',
+        passwordConfirmation: 'test123',
       });
       expect(res.status).toBe(400);
     });
 
     it('rechaza cédula duplicada con 400', async () => {
       const res = await request(app).post('/api/users/registro').send({
-        name: 'Third', email: 'third@test.com', cedula: '1111111111',
-        password: 'test123', passwordConfirmation: 'test123',
+        name: 'Third',
+        email: 'third@test.com',
+        cedula: '1111111111',
+        password: 'test123',
+        passwordConfirmation: 'test123',
       });
       expect(res.status).toBe(400);
     });
 
     it('rechaza contraseñas que no coinciden', async () => {
       const res = await request(app).post('/api/users/registro').send({
-        name: 'Test', email: 'pwd@test.com', cedula: '3333333333',
-        password: 'test123', passwordConfirmation: 'different',
+        name: 'Test',
+        email: 'pwd@test.com',
+        cedula: '3333333333',
+        password: 'test123',
+        passwordConfirmation: 'different',
       });
       expect(res.status).toBe(400);
     });
@@ -76,8 +84,11 @@ describe('Auth API', () => {
   describe('POST /api/users/login', () => {
     beforeAll(async () => {
       await User.create({
-        name: 'Login Test', email: 'login@test.com', cedula: '4444444444',
-        password: 'test123', rol: 'mecanico',
+        name: 'Login Test',
+        email: 'login@test.com',
+        cedula: '4444444444',
+        password: 'test123',
+        rol: 'mecanico',
       });
     });
 
@@ -118,8 +129,11 @@ describe('Auth API', () => {
 
     beforeAll(async () => {
       await User.create({
-        name: 'Me Test', email: 'me@test.com', cedula: '5555555555',
-        password: 'test123', rol: 'mecanico',
+        name: 'Me Test',
+        email: 'me@test.com',
+        cedula: '5555555555',
+        password: 'test123',
+        rol: 'mecanico',
       });
       const login = await request(app)
         .post('/api/users/login')
@@ -146,8 +160,11 @@ describe('Auth API', () => {
     it('register → login → me → refresh → logout', async () => {
       // Register
       const reg = await request(app).post('/api/users/registro').send({
-        name: 'Flow Test', email: 'flow@test.com', cedula: '6666666666',
-        password: 'test123', passwordConfirmation: 'test123',
+        name: 'Flow Test',
+        email: 'flow@test.com',
+        cedula: '6666666666',
+        password: 'test123',
+        passwordConfirmation: 'test123',
       });
       expect(reg.status).toBe(201);
 
