@@ -1,0 +1,22 @@
+@import 'tailwindcss';
+
+:root {
+  --color-primary: #2563eb;
+  --color-secondary: #1e293b;
+  --color-accent: #f59e0b;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: #f8fafc;
+  color: #1e293b;
+}
+
+@media (max-width: 768px) {
+  .sidebar-open { transform: translateX(0); }
+  .sidebar-closed { transform: translateX(-100%); }
+}
+
+.scrollbar-thin::-webkit-scrollbar { width: 6px; }
+.scrollbar-thin::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
