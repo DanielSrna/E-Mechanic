@@ -2,7 +2,11 @@ import express from 'express';
 const router = express.Router();
 import * as orderController from '../controllers/order.controller.js';
 import { validate } from '../middlewares/validatorErrorHandler.js';
-import { verifyToken, requireRole } from '../middlewares/auth.middleware.js';
+import {
+  verifyToken,
+  requireRole,
+  requireAssignedMechanic,
+} from '../middlewares/auth.middleware.js';
 import {
   createOrderValidator,
   updateStatusValidator,
@@ -88,7 +92,7 @@ router.use(verifyToken);
 router
   .route('/')
   .post(
-    requireRole('admin', 'mecanico'),
+    requireRole('admin'),
     createOrderValidator,
     validate,
     orderController.createOrder
@@ -191,7 +195,7 @@ router
 router
   .route('/:id/status')
   .put(
-    requireRole('admin', 'mecanico'),
+    requireAssignedMechanic,
     updateStatusValidator,
     validate,
     orderController.updateOrderStatus
@@ -230,13 +234,13 @@ router
 router
   .route('/:id/parts')
   .put(
-    requireRole('admin', 'mecanico'),
+    requireAssignedMechanic,
     addPartValidator,
     validate,
     orderController.addPartToOrder
   )
   .delete(
-    requireRole('admin', 'mecanico'),
+    requireAssignedMechanic,
     removePartValidator,
     validate,
     orderController.removePartFromOrder
@@ -275,13 +279,13 @@ router
 router
   .route('/:id/labor')
   .put(
-    requireRole('admin', 'mecanico'),
+    requireRole('admin'),
     addLaborValidator,
     validate,
     orderController.addLaborToOrder
   )
   .delete(
-    requireRole('admin', 'mecanico'),
+    requireRole('admin'),
     removeLaborValidator,
     validate,
     orderController.removeLaborFromOrder

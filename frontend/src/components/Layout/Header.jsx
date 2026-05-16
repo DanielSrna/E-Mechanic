@@ -17,6 +17,14 @@ export default function Header({ onMenuClick }) {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
         </svg>
       </button>
+      <div className="flex items-center gap-2">
+        {settings?.logo ? (
+          <img src={settings.logo} alt="Logo" className="h-8 w-auto object-contain" />
+        ) : (
+          <span className="text-xl">🏍️</span>
+        )}
+        <span className="font-semibold text-slate-700 hidden sm:inline">{settings?.appName || 'E-Mechanic'}</span>
+      </div>
       <div className="flex-1" />
       <span className="text-xs px-2 py-1 rounded-full font-medium" style={{
         background: settings?.primaryColor + '20' || '#2563eb20',

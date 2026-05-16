@@ -2,46 +2,14 @@ import express from 'express';
 const router = express.Router();
 import * as userController from '../controllers/user.controller.js';
 import { validate } from '../middlewares/validatorErrorHandler.js';
-import { verifyToken } from '../middlewares/auth.middleware.js';
+import { verifyToken, requireRole } from '../middlewares/auth.middleware.js';
+import { uploadSingle } from '../middlewares/upload.middleware.js';
+import { deleteFile } from '../services/storage.service.js';
 import { authLimiter } from '../middlewares/rateLimiter.middleware.js';
 import {
   registerValidator,
   loginValidator,
 } from '../validators/user.validators.js';
-
-/**
- * @swagger
- * /api/users/registro:
- *   post:
- *     summary: Registrar un nuevo usuario
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required: [name, email, cedula, password, passwordConfirmation]
- *             properties:
- *               name:
- *                 type: string
- *               email:
- *                 type: string
- *               cedula:
- *                 type: string
- *               password:
- *                 type: string
- *               passwordConfirmation:
- *                 type: string
- *     responses:
- *       201:
- *         description: Usuario creado exitosamente
- *       400:
- *         description: Error de validación
- */
-router
-  .route('/registro')
-  .post([authLimiter, ...registerValidator, validate], userController.register);
 
 /**
  * @swagger
@@ -71,46 +39,46 @@ router
   .route('/login')
   .post([authLimiter, ...loginValidator, validate], userController.login);
 
-/**
- * @swagger
- * /api/users/refresh-token:
- *   post:
- *     summary: Refrescar access token usando refresh token de la cookie
- *     tags: [Auth]
- *     responses:
- *       200:
- *         description: Nuevo access token generado
- *       401:
- *         description: Refresh token inválido o expirado
- */
 router.route('/refresh-token').post(userController.refreshToken);
-
-/**
- * @swagger
- * /api/users/logout:
- *   post:
- *     summary: Cerrar sesión (revoca refresh token y limpia cookie)
- *     tags: [Auth]
- *     responses:
- *       200:
- *         description: Sesión cerrada exitosamente
- */
 router.route('/logout').post(userController.logout);
-
-/**
- * @swagger
- * /api/users/me:
- *   get:
- *     summary: Obtener perfil del usuario autenticado
- *     tags: [Auth]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Perfil del usuario
- *       401:
- *         description: No autenticado
- */
 router.route('/me').get(verifyToken, userController.getMe);
+
+router.use(verifyToken);
+
+router
+  .route('/')
+  .get(requireRole('admin'), userController.getMechanics)
+  .post(
+    requireRole('admin'),
+    registerValidator,
+    validate,
+    userController.createMechanic
+  );
+
+router.route('/:id').put(requireRole('admin'), userController.updateMechanic);
+
+router
+  .route('/:id/fire')
+  .put(requireRole('admin'), userController.fireMechanic);
+
+router
+  .route('/:id/photo')
+  .post(
+    requireRole('admin'),
+    uploadSingle('photo', 'users'),
+    async (req, res, next) => {
+      try {
+        const User = (await import('../models/user.model.js')).default;
+        const user = await User.findById(req.params.id);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        if (user.photo) await deleteFile(user.photo);
+        user.photo = req.uploadedFileUrl;
+        await user.save();
+        res.status(200).json({ message: 'Photo uploaded', photo: user.photo });
+      } catch (error) {
+        next(error);
+      }
+    }
+  );
 
 export default router;

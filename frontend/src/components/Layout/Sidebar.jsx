@@ -7,6 +7,7 @@ const navItems = [
   { to: '/', label: 'Dashboard', icon: '📊', adminOnly: true },
   { to: '/clients', label: 'Clientes', icon: '👥', adminOnly: false },
   { to: '/motorcycles', label: 'Motocicletas', icon: '🏍️', adminOnly: false },
+  { to: '/mechanics', label: 'Mecánicos', icon: '👨‍🔧', adminOnly: true },
   { to: '/orders', label: 'Órdenes', icon: '🔧', adminOnly: false },
   { to: '/inventory', label: 'Inventario', icon: '📦', adminOnly: false },
   { to: '/settings', label: 'Configuración', icon: '⚙️', adminOnly: true },
@@ -72,8 +73,8 @@ export default function Sidebar({ open, onClose }) {
             <p className="text-white/50 text-xs truncate">{user?.rol}</p>
           </div>
         </div>
-        <button onClick={logout} className="w-full py-2 text-white/60 hover:text-white text-sm flex items-center justify-center gap-2 hover:bg-white/10 rounded-lg transition">
-          🚪 Cerrar sesión
+        <button onClick={logout} className="w-full py-2.5 rounded-lg text-sm font-medium transition bg-red-500/20 hover:bg-red-500/40 text-red-300 hover:text-white">
+          Cerrar sesión
         </button>
       </div>
     </aside>

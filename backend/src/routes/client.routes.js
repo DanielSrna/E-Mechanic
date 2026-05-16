@@ -67,7 +67,7 @@ router.use(verifyToken);
 router
   .route('/')
   .post(
-    requireRole('admin', 'mecanico'),
+    requireRole('admin'),
     createClientValidator,
     validate,
     clientController.createClient

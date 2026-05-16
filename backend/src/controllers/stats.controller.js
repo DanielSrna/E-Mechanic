@@ -2,6 +2,7 @@ import Order from '../models/order.model.js';
 import Client from '../models/client.model.js';
 import Part from '../models/part.model.js';
 import logger from '../utils/logger.js';
+import mongoose from 'mongoose';
 
 export const getOverview = async (req, res, next) => {
   logger.contexto('Iniciando controlador getOverview');
@@ -289,6 +290,91 @@ export const getOrderStatusDistribution = async (req, res, next) => {
     res.status(200).json({ labels, data });
   } catch (error) {
     logger.fracaso('Error en getOrderStatusDistribution: ', error);
+    next(error);
+  }
+};
+
+export const getMechanicDetailStats = async (req, res, next) => {
+  logger.contexto('Iniciando controlador getMechanicDetailStats');
+
+  try {
+    const mechanicId = req.params.id;
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    const [activeOrders, completedThisMonth, completedAll, stats] =
+      await Promise.all([
+        Order.countDocuments({
+          mechanic: mechanicId,
+          status: { $nin: ['entregada', 'cancelada'] },
+        }),
+        Order.countDocuments({
+          mechanic: mechanicId,
+          isClosed: true,
+          createdAt: { $gte: startOfMonth },
+        }),
+        Order.countDocuments({
+          mechanic: mechanicId,
+          isClosed: true,
+        }),
+        Order.aggregate([
+          {
+            $match: {
+              mechanic: new mongoose.Types.ObjectId(mechanicId),
+              isClosed: true,
+            },
+          },
+          {
+            $group: {
+              _id: null,
+              totalBilled: { $sum: '$total' },
+              avgTicket: { $avg: '$total' },
+            },
+          },
+        ]),
+      ]);
+
+    const monthlyStats = await Order.aggregate([
+      {
+        $match: {
+          mechanic: new mongoose.Types.ObjectId(mechanicId),
+          isClosed: true,
+          createdAt: {
+            $gte: new Date(now.getFullYear(), now.getMonth() - 5, 1),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: '$createdAt' },
+            month: { $month: '$createdAt' },
+          },
+          count: { $sum: 1 },
+          revenue: { $sum: '$total' },
+        },
+      },
+      { $sort: { '_id.year': 1, '_id.month': 1 } },
+    ]);
+
+    const User = (await import('../models/user.model.js')).default;
+    const user = await User.findById(mechanicId).select(
+      'name email rol photo isActive'
+    );
+
+    logger.exito('Estadísticas de mecánico obtenidas');
+
+    res.status(200).json({
+      mechanic: user,
+      activeOrders,
+      completedThisMonth,
+      completedAll,
+      totalBilled: stats.length > 0 ? stats[0].totalBilled : 0,
+      avgTicket: stats.length > 0 ? Math.round(stats[0].avgTicket) : 0,
+      monthlyStats,
+    });
+  } catch (error) {
+    logger.fracaso('Error en getMechanicDetailStats: ', error);
     next(error);
   }
 };

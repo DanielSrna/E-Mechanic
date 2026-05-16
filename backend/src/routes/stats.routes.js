@@ -102,4 +102,8 @@ router
   .route('/order-status-distribution')
   .get(requireRole('admin'), statsController.getOrderStatusDistribution);
 
+router
+  .route('/mechanics/:id')
+  .get(requireRole('admin'), statsController.getMechanicDetailStats);
+
 export default router;

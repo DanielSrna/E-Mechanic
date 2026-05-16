@@ -2,7 +2,6 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Layout from './components/Layout/Layout';
 import Login from './pages/Login';
-import Register from './pages/Register';
 import Dashboard from './pages/Dashboard/Dashboard';
 import ClientList from './pages/Clients/ClientList';
 import ClientForm from './pages/Clients/ClientForm';
@@ -14,6 +13,8 @@ import OrderForm from './pages/Orders/OrderForm';
 import PartList from './pages/Inventory/PartList';
 import PartForm from './pages/Inventory/PartForm';
 import SettingsPage from './pages/Settings/SettingsPage';
+import MechanicList from './pages/Mechanics/MechanicList';
+import MechanicForm from './pages/Mechanics/MechanicForm';
 import NotFound from './pages/NotFound';
 
 export default function App() {
@@ -22,7 +23,6 @@ export default function App() {
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
           <Route element={<Layout />}>
             <Route path="/" element={<Dashboard />} />
             <Route path="/clients" element={<ClientList />} />
@@ -38,6 +38,8 @@ export default function App() {
             <Route path="/inventory/new" element={<PartForm />} />
             <Route path="/inventory/:id/edit" element={<PartForm />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/mechanics" element={<MechanicList />} />
+            <Route path="/mechanics/new" element={<MechanicForm />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

@@ -23,6 +23,9 @@ export default function Layout() {
         <main className="flex-1 overflow-auto p-4 md:p-6 lg:p-8">
           <Outlet />
         </main>
+        <footer className="py-3 text-center text-xs text-slate-400 border-t border-slate-200 bg-white">
+          Desarrollado por <span className="font-medium text-slate-500">Daniel Felipe Serna López</span> &copy; {new Date().getFullYear()}
+        </footer>
       </div>
     </div>
   );

@@ -10,6 +10,17 @@ let accessToken = null;
 export const setToken = (token) => { accessToken = token; };
 export const getToken = () => accessToken;
 
+function updateStoredToken(newToken) {
+  try {
+    const stored = localStorage.getItem('me');
+    if (stored) {
+      const me = JSON.parse(stored);
+      me.token = newToken;
+      localStorage.setItem('me', JSON.stringify(me));
+    }
+  } catch {}
+}
+
 api.interceptors.request.use((config) => {
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`;
@@ -24,12 +35,16 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !original._retry) {
       original._retry = true;
       try {
-        const { data } = await axios.post('/api/users/refresh-token', {}, { withCredentials: true });
+        const { data } = await axios.post('/api/users/refresh-token', {}, {
+          withCredentials: true,
+        });
         accessToken = data.accessToken;
+        updateStoredToken(data.accessToken);
         original.headers.Authorization = `Bearer ${accessToken}`;
         return api(original);
       } catch {
         accessToken = null;
+        localStorage.removeItem('me');
         window.location.href = '/login';
       }
     }

@@ -75,7 +75,7 @@ router.use(verifyToken);
 router
   .route('/')
   .post(
-    requireRole('admin', 'mecanico'),
+    requireRole('admin'),
     createMotorcycleValidator,
     validate,
     motorcycleController.createMotorcycle
