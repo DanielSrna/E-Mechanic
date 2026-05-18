@@ -1,5 +1,6 @@
 import eventEmitter from '../eventEmitter.js';
 import Invoice from '../../models/invoice.model.js';
+import Settings from '../../models/settings.model.js';
 import { generateInvoicePDF } from '../../services/pdf.service.js';
 import { sendInvoiceEmail } from '../../services/email.service.js';
 import logger from '../../utils/logger.js';
@@ -9,6 +10,17 @@ eventEmitter.on('order:closed', async ({ orderId, clientEmail, orderData }) => {
 
   try {
     const invoiceNumber = await Invoice.generateInvoiceNumber();
+    const settings = await Settings.getSettings();
+    const company = {
+      name: settings.appName || 'E-Mechanic',
+      companyName: settings.companyName || 'E-Mechanic Taller',
+      nit: settings.companyNit || '123456789-0',
+      address: settings.companyAddress || '',
+      phone: settings.companyPhone || '',
+      email: settings.companyEmail || '',
+      primaryColor: settings.primaryColor || '#2563eb',
+      logo: settings.logo || null,
+    };
 
     logger.proceso('Creando registro de factura %s...', invoiceNumber);
     const invoice = await Invoice.create({
@@ -35,6 +47,7 @@ eventEmitter.on('order:closed', async ({ orderId, clientEmail, orderData }) => {
       tax: orderData.tax,
       total: orderData.total,
       sentToEmail: invoice.sentToEmail,
+      company,
     });
 
     if (invoice.sentToEmail) {
@@ -47,6 +60,7 @@ eventEmitter.on('order:closed', async ({ orderId, clientEmail, orderData }) => {
           motorcycle: orderData.motorcycle || {},
           total: orderData.total,
           sentToEmail: invoice.sentToEmail,
+          company,
         },
         pdfBuffer
       );

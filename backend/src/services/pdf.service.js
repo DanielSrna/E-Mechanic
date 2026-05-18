@@ -1,33 +1,34 @@
 import PDFDocument from 'pdfkit';
 import logger from '../utils/logger.js';
 
-const COMPANY = {
-  name: 'E-Mechanic Taller',
-  nit: '123456789-0',
-  address: 'Calle 123 #45-67, Bogotá',
-  phone: '300 123 4567',
-  email: 'contacto@emechanic.com',
-};
-
 function formatCurrency(amount) {
   return `$${Number(amount).toLocaleString('es-CO')}`;
 }
 
-function drawHeader(doc) {
+function drawHeader(doc, company) {
+  const name = company.companyName || company.name || 'E-Mechanic';
   doc
-    .fontSize(22)
+    .fontSize(20)
     .font('Helvetica-Bold')
-    .text('E-MECHANIC', { align: 'center' })
+    .text(name.toUpperCase(), { align: 'center' })
     .fontSize(10)
     .font('Helvetica')
     .text('TALLER DE MOTOCICLETAS', { align: 'center' })
     .moveDown(0.3)
     .fontSize(8)
-    .text(`NIT: ${COMPANY.nit}  |  ${COMPANY.address}`, { align: 'center' })
-    .text(`Tel: ${COMPANY.phone}  |  ${COMPANY.email}`, { align: 'center' })
+    .text(`NIT: ${company.nit || 'N/A'}  |  ${company.address || ''}`, {
+      align: 'center',
+    })
+    .text(`Tel: ${company.phone || 'N/A'}  |  ${company.email || ''}`, {
+      align: 'center',
+    })
     .moveDown(1);
 
-  doc.moveTo(50, doc.y).lineTo(545, doc.y).stroke('#2563eb').moveDown(0.8);
+  doc
+    .moveTo(50, doc.y)
+    .lineTo(545, doc.y)
+    .stroke(company.primaryColor || '#2563eb')
+    .moveDown(0.8);
 
   doc
     .fontSize(14)
@@ -95,9 +96,9 @@ function drawMotorcycleInfo(doc, motorcycle, order) {
     .moveDown(2.5);
 }
 
-function drawTableHeader(doc) {
+function drawTableHeader(doc, company) {
   const y = doc.y;
-  doc.rect(50, y, 495, 18).fill('#2563eb');
+  doc.rect(50, y, 495, 18).fill(company.primaryColor || '#2563eb');
 
   doc
     .fontSize(8)
@@ -131,73 +132,84 @@ function drawTableRow(doc, description, quantity, unitPrice, total, isBold) {
   }
 }
 
-function drawTotalBlock(doc, subtotalParts, subtotalLabor, tax, total) {
-  doc.moveTo(50, doc.y).lineTo(545, doc.y).stroke('#e5e7eb').moveDown(0.5);
+function drawTotalBlock(
+  doc,
+  subtotalParts,
+  subtotalLabor,
+  tax,
+  total,
+  company
+) {
+  doc
+    .moveDown(0.3)
+    .moveTo(50, doc.y)
+    .lineTo(545, doc.y)
+    .stroke('#e5e7eb')
+    .moveDown(0.8);
 
-  const labelX = 360;
-  const valueX = 440;
-  const valueWidth = 95;
+  const labelX = 300;
+  const valueX = 430;
+  const valueWidth = 105;
+  const lineHeight = 20;
 
-  const drawTotalLine = (label, value, isBold, isTotal) => {
+  const drawTotalLine = (label, value, isTotal) => {
     const y = doc.y;
     if (isTotal) {
       doc
-        .rect(labelX - 5, y - 2, valueX + valueWidth - labelX + 10, 18)
-        .fill('#2563eb');
+        .rect(labelX - 5, y, valueX + valueWidth - labelX + 10, lineHeight + 4)
+        .fill(company.primaryColor || '#2563eb');
       doc
-        .fontSize(9)
+        .fontSize(10)
         .font('Helvetica-Bold')
         .fillColor('white')
-        .text(label, labelX, y + 2, { width: 70 })
-        .text(formatCurrency(value), valueX, y + 2, {
+        .text(label, labelX, y + 4, { width: 120, align: 'right' })
+        .text(formatCurrency(value), valueX, y + 4, {
           width: valueWidth,
           align: 'right',
         })
         .fillColor('black');
+      doc.y = y + lineHeight + 6;
     } else {
       doc
         .fontSize(8)
-        .font(isBold ? 'Helvetica-Bold' : 'Helvetica')
-        .text(label, labelX, y, { width: 70 })
-        .text(formatCurrency(value), valueX, y, {
+        .font('Helvetica')
+        .text(label, labelX, y + 3, { width: 120, align: 'right' })
+        .text(formatCurrency(value), valueX, y + 3, {
           width: valueWidth,
           align: 'right',
         });
+      doc.y = y + lineHeight;
     }
-    doc.moveDown(0.3);
   };
 
   drawTotalLine('Subtotal Repuestos:', subtotalParts);
   drawTotalLine('Subtotal Mano de Obra:', subtotalLabor);
   drawTotalLine('IVA (19%):', tax);
-  doc
-    .moveTo(labelX - 5, doc.y + 2)
-    .lineTo(valueX + valueWidth + 5, doc.y + 2)
-    .stroke('#d1d5db')
-    .moveDown(0.5);
-  drawTotalLine('TOTAL:', total, true, true);
+  doc.moveDown(0.3);
+  drawTotalLine('TOTAL:', total, true);
 }
 
-function drawFooter(doc, invoiceNumber) {
+function drawFooter(doc, invoiceNumber, company) {
   const bottomY = 720;
+  const name = company.companyName || company.name || 'E-Mechanic';
   doc
     .fontSize(7)
     .font('Helvetica')
     .fillColor('#6b7280')
     .text(
-      `Documento generado electrónicamente. No requiere firma.`,
+      'Documento generado electrónicamente. No requiere firma.',
       50,
       bottomY,
       { align: 'center' }
     )
     .text(
-      `Factura Nº ${invoiceNumber}  |  E-Mechanic © ${new Date().getFullYear()}`,
+      `Factura Nº ${invoiceNumber}  |  ${name} © ${new Date().getFullYear()}`,
       50,
       bottomY + 12,
       { align: 'center' }
     )
     .text(
-      `Código único: ${invoiceNumber}  |  Verifique en emechanic.com/facturas`,
+      `Código único: ${invoiceNumber}  |  Verifique en su taller de confianza`,
       50,
       bottomY + 24,
       { align: 'center' }
@@ -236,6 +248,7 @@ export async function generateInvoicePDF(invoiceData) {
         subtotalLabor,
         tax,
         total,
+        company,
       } = invoiceData;
 
       const date = new Date().toLocaleDateString('es-CO', {
@@ -244,11 +257,11 @@ export async function generateInvoicePDF(invoiceData) {
         year: 'numeric',
       });
 
-      drawHeader(doc);
+      drawHeader(doc, company || {});
       drawInvoiceInfo(doc, invoiceNumber, date);
       drawClientInfo(doc, client || {});
       drawMotorcycleInfo(doc, motorcycle || {}, order || {});
-      drawTableHeader(doc);
+      drawTableHeader(doc, company || {});
 
       if (order?.partsUsed?.length) {
         order.partsUsed.forEach((p) => {
@@ -298,8 +311,15 @@ export async function generateInvoicePDF(invoiceData) {
         drawTableRow(doc, 'Sin ítems registrados', '-', 0, 0);
       }
 
-      drawTotalBlock(doc, subtotalParts, subtotalLabor, tax, total);
-      drawFooter(doc, invoiceNumber);
+      drawTotalBlock(
+        doc,
+        subtotalParts,
+        subtotalLabor,
+        tax,
+        total,
+        company || {}
+      );
+      drawFooter(doc, invoiceNumber, company || {});
 
       doc.end();
     } catch (error) {
