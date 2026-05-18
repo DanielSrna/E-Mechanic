@@ -72,6 +72,23 @@ export default function SettingsPage() {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
+        <h2 className="font-semibold text-slate-700">Apariencia</h2>
+        <label className="flex items-center justify-between cursor-pointer">
+          <span className="text-sm text-slate-600">Modo oscuro</span>
+          <input
+            type="checkbox"
+            className="w-5 h-5 rounded"
+            defaultChecked={localStorage.getItem('darkMode') === 'true'}
+            onChange={(e) => {
+              const isDark = e.target.checked;
+              localStorage.setItem('darkMode', String(isDark));
+              document.documentElement.classList.toggle('dark', isDark);
+            }}
+          />
+        </label>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
         <h2 className="font-semibold text-slate-700">Datos del Taller (Facturas)</h2>
         <SettingsField label="Nombre de la Empresa" value={settings?.companyName} onChange={v => update('companyName', v)} />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

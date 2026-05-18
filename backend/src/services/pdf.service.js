@@ -7,6 +7,19 @@ function formatCurrency(amount) {
 
 function drawHeader(doc, company) {
   const name = company.companyName || company.name || 'E-Mechanic';
+  const startY = doc.y;
+
+  if (company.logo) {
+    try {
+      const logoPath = company.logo.startsWith('http')
+        ? company.logo
+        : null;
+      if (logoPath) {
+        doc.image(logoPath, 50, startY, { width: 50 });
+      }
+    } catch { /* logo no disponible */ }
+  }
+
   doc
     .fontSize(20)
     .font('Helvetica-Bold')

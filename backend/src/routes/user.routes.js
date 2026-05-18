@@ -84,4 +84,6 @@ router
     }
   );
 
+router.route('/change-password').put(userController.changePassword);
+
 export default router;

@@ -25,6 +25,7 @@ import partUploadRoutes from './src/routes/part-upload.routes.js';
 import motoUploadRoutes from './src/routes/moto-upload.routes.js';
 import statsRoutes from './src/routes/stats.routes.js';
 import settingsRoutes from './src/routes/settings.routes.js';
+import exportRoutes from './src/routes/export.routes.js';
 
 // Middlewares
 app.use(express.json({ limit: '10mb' }));
@@ -108,6 +109,7 @@ app.use('/api/parts', partUploadRoutes);
 app.use('/api/parts', partRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/export', exportRoutes);
 
 // Manejador global de errores
 app.use((error, req, res, _next) => {

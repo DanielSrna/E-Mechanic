@@ -329,3 +329,28 @@ export const fireMechanic = async (req, res, next) => {
     next(error);
   }
 };
+
+export const changePassword = async (req, res, next) => {
+  logger.contexto('Iniciando controlador changePassword');
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Current and new password required' });
+    }
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'New password must be at least 6 characters' });
+    }
+    const isMatch = await req.user.comparePassword(currentPassword);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Current password is incorrect' });
+    }
+    req.user.password = newPassword;
+    await req.user.save();
+    logger.exito('Contraseña cambiada para %s', req.user.email);
+    res.status(200).json({ message: 'Password changed successfully' });
+  } catch (error) {
+    logger.fracaso('Error al cambiar contraseña: ', error);
+    next(error);
+  }
+};
+

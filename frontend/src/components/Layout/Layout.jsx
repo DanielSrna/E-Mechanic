@@ -2,11 +2,16 @@ import { Outlet, Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Sidebar from './Sidebar';
 import Header from './Header';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Layout() {
   const { user, loading } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    const dark = localStorage.getItem('darkMode') === 'true';
+    document.documentElement.classList.toggle('dark', dark);
+  }, []);
 
   if (loading) {
     return (
