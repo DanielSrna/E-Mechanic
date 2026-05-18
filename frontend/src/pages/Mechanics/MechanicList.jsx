@@ -21,7 +21,7 @@ export default function MechanicList() {
           try {
             const s = await api.get(`/stats/mechanics/${m._id}`);
             statsMap[m._id] = s.data;
-          } catch {}
+          } catch (e) { console.error(e); }
         })
       );
       setStats(statsMap);

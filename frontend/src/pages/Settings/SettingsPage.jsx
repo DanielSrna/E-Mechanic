@@ -1,18 +1,19 @@
 import { useEffect, useState } from 'react';
 import api from '../../api/axios';
 import toast from 'react-hot-toast';
+import { useSettings } from '../../context/SettingsContext';
 
 export default function SettingsPage() {
-  const [settings, setSettings] = useState(null);
+  const { settings, updateSettings } = useSettings();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [logoUpload, setLogoUpload] = useState(false);
 
   useEffect(() => {
-    api.get('/settings').then(r => setSettings(r.data.settings)).finally(() => setLoading(false));
-  }, []);
+    if (settings) setLoading(false);
+  }, [settings]);
 
-  const update = (key, value) => setSettings({ ...settings, [key]: value });
+  const update = (key, value) => updateSettings({ ...settings, [key]: value });
 
   const handleSave = async () => {
     setSaving(true);
@@ -29,7 +30,7 @@ export default function SettingsPage() {
     setLogoUpload(true);
     try {
       const { data } = await api.post('/settings/logo', fd);
-      setSettings({ ...settings, logo: data.logo });
+      updateSettings({ ...settings, logo: data.logo });
       toast.success('Logo actualizado');
     } catch { toast.error('Error al subir logo'); }
     setLogoUpload(false);

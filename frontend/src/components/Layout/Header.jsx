@@ -1,14 +1,9 @@
 import { useAuth } from '../../context/AuthContext';
-import api from '../../api/axios';
-import { useEffect, useState } from 'react';
+import { useSettings } from '../../context/SettingsContext';
 
 export default function Header({ onMenuClick }) {
   const { user } = useAuth();
-  const [settings, setSettings] = useState(null);
-
-  useEffect(() => {
-    api.get('/settings').then(r => setSettings(r.data.settings)).catch(() => {});
-  }, []);
+  const { settings } = useSettings();
 
   return (
     <header className="bg-white border-b border-slate-200 px-4 md:px-6 py-3 flex items-center gap-3">

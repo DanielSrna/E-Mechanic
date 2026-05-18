@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
+import { formatCOP } from '../../utils/format';
 import {
   Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title,
   Tooltip, Legend, ArcElement, PointElement, LineElement,
@@ -20,10 +22,10 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!isAdmin) return;
-    api.get('/stats/overview').then(r => setOverview(r.data)).catch(() => {});
-    api.get('/stats/revenue?period=monthly').then(r => setRevenue(r.data)).catch(() => {});
-    api.get('/stats/mechanic-productivity').then(r => setMechanics(r.data)).catch(() => {});
-    api.get('/stats/order-status-distribution').then(r => setStatusDist(r.data)).catch(() => {});
+    api.get('/stats/overview').then(r => setOverview(r.data)).catch((e) => console.error(e));
+    api.get('/stats/revenue?period=monthly').then(r => setRevenue(r.data)).catch((e) => console.error(e));
+    api.get('/stats/mechanic-productivity').then(r => setMechanics(r.data)).catch((e) => console.error(e));
+    api.get('/stats/order-status-distribution').then(r => setStatusDist(r.data)).catch((e) => console.error(e));
   }, [isAdmin]);
 
   if (!isAdmin) {
@@ -35,8 +37,6 @@ export default function Dashboard() {
       </div>
     );
   }
-
-  const formatCOP = (n) => `$${Number(n || 0).toLocaleString('es-CO')}`;
 
   return (
     <div className="space-y-6">
@@ -123,9 +123,9 @@ function StatCard({ label, value, icon, color }) {
 
 function QuickLink({ href, label, icon }) {
   return (
-    <a href={href} className="flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:border-blue-300 hover:bg-blue-50 transition group">
+    <Link to={href} className="flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:border-blue-300 hover:bg-blue-50 transition group">
       <span className="text-2xl">{icon}</span>
       <span className="text-sm font-medium text-slate-600 group-hover:text-blue-600">{label}</span>
-    </a>
+    </Link>
   );
 }

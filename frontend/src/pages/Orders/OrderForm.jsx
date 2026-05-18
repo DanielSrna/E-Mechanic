@@ -11,8 +11,8 @@ export default function OrderForm() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    api.get('/motorcycles').then(r => setMotorcycles(r.data.motorcycles)).catch(() => {});
-    api.get('/users').then(r => setMechanics(r.data.users.filter(u => u.isActive))).catch(() => {});
+    api.get('/motorcycles').then(r => setMotorcycles(r.data.motorcycles)).catch((e) => console.error(e));
+    api.get('/users').then(r => setMechanics(r.data.users.filter(u => u.isActive))).catch((e) => console.error(e));
   }, []);
 
   const handleSubmit = async (e) => {

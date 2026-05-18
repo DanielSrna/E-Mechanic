@@ -13,7 +13,7 @@ export default function MotorcycleForm() {
   const [imgUpload, setImgUpload] = useState(false);
 
   useEffect(() => {
-    api.get('/clients').then(r => setClients(r.data.clients)).catch(() => {});
+    api.get('/clients').then(r => setClients(r.data.clients)).catch((e) => console.error(e));
     if (id) {
       api.get(`/motorcycles/${id}`).then(r => {
         const m = r.data.motorcycle;

@@ -35,7 +35,7 @@ export default function OrderDetail() {
     setLoading(false);
   };
 
-  useEffect(() => { fetch(); api.get('/parts').then(r => setParts(r.data.parts)).catch(() => {}); }, [id]);
+  useEffect(() => { fetch(); api.get('/parts').then(r => setParts(r.data.parts)).catch((e) => console.error(e)); }, [id]);
 
   const updateStatus = async (status) => {
     try { await api.put(`/orders/${id}/status`, { status }); toast.success('Estado actualizado'); fetch(); }

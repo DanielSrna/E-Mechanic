@@ -18,7 +18,7 @@ function updateStoredToken(newToken) {
       me.token = newToken;
       localStorage.setItem('me', JSON.stringify(me));
     }
-  } catch {}
+  } catch (e) { console.error(e); }
 }
 
 api.interceptors.request.use((config) => {

@@ -35,7 +35,7 @@ export function AuthProvider({ children }) {
   };
 
   const logout = async () => {
-    try { await api.post('/users/logout'); } catch {}
+    try { await api.post('/users/logout'); } catch (e) { console.error(e); }
     setToken(null);
     setUser(null);
     localStorage.removeItem('me');

@@ -1,7 +1,6 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import api from '../../api/axios';
-import { useEffect, useState } from 'react';
+import { useSettings } from '../../context/SettingsContext';
 
 const navItems = [
   { to: '/', label: 'Dashboard', icon: '📊', adminOnly: true },
@@ -16,11 +15,7 @@ const navItems = [
 export default function Sidebar({ open, onClose }) {
   const { user, logout, isAdmin } = useAuth();
   const location = useLocation();
-  const [settings, setSettings] = useState(null);
-
-  useEffect(() => {
-    api.get('/settings').then(r => setSettings(r.data.settings)).catch(() => {});
-  }, []);
+  const { settings } = useSettings();
 
   const visibleItems = navItems.filter(i => !i.adminOnly || isAdmin);
 
