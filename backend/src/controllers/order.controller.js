@@ -434,7 +434,7 @@ export const closeOrder = async (req, res, next) => {
 
     if (order.status !== 'lista_entrega' && order.status !== 'entregada') {
       return res.status(400).json({
-        message: "Order must be in 'lista_entrega' status before closing",
+        message: "Order must be in 'lista_entrega' or 'entregada' status before closing",
       });
     }
 

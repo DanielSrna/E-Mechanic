@@ -181,9 +181,9 @@ export default function OrderDetail() {
         </div>
       )}
 
-      {isAdmin && !order.isClosed && order.status === 'lista_entrega' && (
+      {isAdmin && !order.isClosed && ['lista_entrega', 'entregada'].includes(order.status) && (
         <button onClick={closeOrder} className="w-full py-3 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700 transition text-lg">
-          Cerrar Orden y Facturar
+          Cerrar Orden y Facturar {order.status === 'entregada' ? '(pendiente de cierre)' : ''}
         </button>
       )}
     </div>

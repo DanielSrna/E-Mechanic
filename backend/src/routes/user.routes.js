@@ -55,7 +55,10 @@ router
     userController.createMechanic
   );
 
-router.route('/:id').put(requireRole('admin'), userController.updateMechanic);
+router
+  .route('/:id')
+  .get(requireRole('admin'), userController.getMechanicById)
+  .put(requireRole('admin'), userController.updateMechanic);
 
 router
   .route('/:id/fire')

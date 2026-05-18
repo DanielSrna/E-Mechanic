@@ -257,6 +257,18 @@ export const updateMechanic = async (req, res, next) => {
   }
 };
 
+export const getMechanicById = async (req, res, next) => {
+  logger.contexto('Iniciando controlador getMechanicById');
+  try {
+    const user = await User.findById(req.params.id).select('-password').lean();
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.status(200).json({ user });
+  } catch (error) {
+    logger.fracaso('Error al obtener mecánico: ', error);
+    next(error);
+  }
+};
+
 export const fireMechanic = async (req, res, next) => {
   logger.contexto('Iniciando controlador fireMechanic');
   try {

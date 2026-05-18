@@ -12,10 +12,7 @@ export default function OrderForm() {
 
   useEffect(() => {
     api.get('/motorcycles').then(r => setMotorcycles(r.data.motorcycles)).catch(() => {});
-    api.get('/users/me').then(async r => {
-      try { await api.get(`/users/${r.data.user._id}`); } catch {}
-      setMechanics([r.data.user]);
-    }).catch(() => {});
+    api.get('/users').then(r => setMechanics(r.data.users.filter(u => u.isActive))).catch(() => {});
   }, []);
 
   const handleSubmit = async (e) => {
