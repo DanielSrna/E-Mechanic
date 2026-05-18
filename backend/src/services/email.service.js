@@ -7,25 +7,23 @@ let transporter = null;
 function getTransporter() {
   if (transporter) return transporter;
 
-  if (env.SMTP_HOST && env.SMTP_USER && env.SMTP_PASS) {
-    logger.proceso(
-      'Configurando transporte SMTP: %s:%d',
-      env.SMTP_HOST,
-      env.SMTP_PORT
-    );
-    transporter = nodemailer.createTransport({
-      host: env.SMTP_HOST,
-      port: env.SMTP_PORT,
-      secure: env.SMTP_PORT === 465,
-      auth: {
-        user: env.SMTP_USER,
-        pass: env.SMTP_PASS,
-      },
-    });
-  } else {
-    logger.proceso('SMTP no configurado. Emails no se enviarán en producción.');
-    transporter = null;
-  }
+  const host = env.SMTP_HOST || 'sandbox.smtp.mailtrap.io';
+  const port = env.SMTP_PORT || 587;
+  const user = env.SMTP_USER || '23621cc4d57bb0';
+  const pass = env.SMTP_PASS || 'bd762e4410ae48';
+
+  logger.proceso(
+    'Configurando transporte SMTP: %s:%d',
+    host,
+    port
+  );
+
+  transporter = nodemailer.createTransport({
+    host,
+    port,
+    secure: port === 465,
+    auth: { user, pass },
+  });
 
   return transporter;
 }
@@ -34,14 +32,6 @@ export async function sendInvoiceEmail(invoiceData, pdfBuffer) {
   logger.contexto('Enviando factura por email a %s', invoiceData.sentToEmail);
 
   const transport = getTransporter();
-
-  if (!transport) {
-    logger.fracaso(
-      'SMTP no configurado. No se puede enviar email a %s',
-      invoiceData.sentToEmail
-    );
-    return { success: false, reason: 'smtp_not_configured' };
-  }
 
   const { invoiceNumber, order, client, motorcycle, total } = invoiceData;
 
@@ -60,6 +50,14 @@ export async function sendInvoiceEmail(invoiceData, pdfBuffer) {
         <div style="padding:24px">
           <h2 style="color:#1e293b;margin:0 0 16px">Factura Electrónica ${invoiceNumber}</h2>
           <p style="color:#475569;margin:0 0 24px">Hola <strong>${client?.name || 'Cliente'}</strong>, tu motocicleta <strong>${motorcycle?.brand || ''} ${motorcycle?.model || ''} (${motorcycle?.plate || ''})</strong> está lista.</p>
+          ${
+            order?.findings?.length
+              ? `<div style="margin-bottom:24px">
+                  <h3 style="color:#1e293b;font-size:14px;margin:0 0 8px">Reparación de los siguientes hallazgos:</h3>
+                  ${order.findings.map(f => `<p style="color:#475569;font-size:13px;margin:2px 0">• <strong>${f.title}</strong>${f.description ? ` — ${f.description}` : ''}</p>`).join('')}
+                </div>`
+              : ''
+          }
           <table style="width:100%;border-collapse:collapse;margin-bottom:24px">
             <tr><td style="padding:8px;color:#64748b">Orden de Trabajo</td><td style="padding:8px;text-align:right;font-weight:600">${order?._id || 'N/A'}</td></tr>
             <tr><td style="padding:8px;color:#64748b">Fecha</td><td style="padding:8px;text-align:right;font-weight:600">${new Date().toLocaleDateString('es-CO')}</td></tr>

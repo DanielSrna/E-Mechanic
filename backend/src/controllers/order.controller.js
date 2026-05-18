@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import Order, { VALID_TRANSITIONS } from '../models/order.model.js';
+import Order from '../models/order.model.js';
 import Motorcycle from '../models/motorcycle.model.js';
 import Part from '../models/part.model.js';
 import logger from '../utils/logger.js';
@@ -116,49 +116,32 @@ export const getOrderById = async (req, res, next) => {
 
 export const updateOrderStatus = async (req, res, next) => {
   logger.contexto('Iniciando controlador updateOrderStatus');
-
   try {
     const { id } = req.params;
     const { status, diagnosis } = req.body;
-
     logger.proceso('Buscando orden...');
     const order = await Order.findById(id);
     if (!order) {
       return res.status(404).json({ message: 'Work order not found' });
     }
-
     if (order.isClosed) {
       return res
         .status(400)
         .json({ message: 'Cannot modify a closed work order' });
     }
-
     const currentStatus = order.status;
-    const allowed = VALID_TRANSITIONS[currentStatus] || [];
-
-    if (!allowed.includes(status)) {
-      logger.fracaso(
-        'Transición inválida: %s → %s. Permitidas: %o',
-        currentStatus,
-        status,
-        allowed
-      );
-      return res.status(400).json({
-        message: `Invalid status transition from '${currentStatus}' to '${status}'`,
-        allowedTransitions: allowed,
-      });
+    if (currentStatus === status) {
+      return res
+        .status(400)
+        .json({ message: 'Order is already in this status' });
     }
-
     order.status = status;
     if (diagnosis !== undefined) order.diagnosis = diagnosis;
     await order.save();
-
     const populated = await Order.findById(order._id)
       .populate('motorcycle', 'plate brand model')
       .populate('mechanic', 'name');
-
     logger.exito('Estado actualizado: %s → %s', currentStatus, status);
-
     res.status(200).json({
       message: 'Order status updated successfully',
       order: populated,
@@ -417,6 +400,56 @@ export const removeLaborFromOrder = async (req, res, next) => {
   }
 };
 
+export const addFindingToOrder = async (req, res, next) => {
+  logger.contexto('Iniciando controlador addFindingToOrder');
+  try {
+    const { id } = req.params;
+    const { title, description } = req.body;
+    const order = await Order.findById(id);
+    if (!order)
+      return res.status(404).json({ message: 'Work order not found' });
+    if (order.isClosed)
+      return res
+        .status(400)
+        .json({ message: 'Cannot modify a closed work order' });
+
+    order.findings.push({ title, description });
+    await order.save();
+    logger.exito('Hallazgo agregado a orden %s: %s', order._id, title);
+    res.status(200).json({ message: 'Finding added', order });
+  } catch (error) {
+    logger.fracaso('Error al agregar hallazgo: ', error);
+    next(error);
+  }
+};
+
+export const removeFindingFromOrder = async (req, res, next) => {
+  logger.contexto('Iniciando controlador removeFindingFromOrder');
+  try {
+    const { id } = req.params;
+    const { index } = req.body;
+    const order = await Order.findById(id);
+    if (!order)
+      return res.status(404).json({ message: 'Work order not found' });
+    if (order.isClosed)
+      return res
+        .status(400)
+        .json({ message: 'Cannot modify a closed work order' });
+    if (index < 0 || index >= order.findings.length) {
+      return res.status(400).json({
+        message: `Invalid finding index. Valid: 0-${order.findings.length - 1}`,
+      });
+    }
+    order.findings.splice(index, 1);
+    await order.save();
+    logger.exito('Hallazgo removido de orden %s', order._id);
+    res.status(200).json({ message: 'Finding removed', order });
+  } catch (error) {
+    logger.fracaso('Error al remover hallazgo: ', error);
+    next(error);
+  }
+};
+
 export const closeOrder = async (req, res, next) => {
   logger.contexto('Iniciando controlador closeOrder');
 
@@ -434,7 +467,8 @@ export const closeOrder = async (req, res, next) => {
 
     if (order.status !== 'lista_entrega' && order.status !== 'entregada') {
       return res.status(400).json({
-        message: "Order must be in 'lista_entrega' or 'entregada' status before closing",
+        message:
+          "Order must be in 'lista_entrega' or 'entregada' status before closing",
       });
     }
 

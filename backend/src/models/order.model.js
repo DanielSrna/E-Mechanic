@@ -59,6 +59,23 @@ const orderLaborSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const orderFindingsSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    description: {
+      type: String,
+      trim: true,
+      maxlength: 2000,
+      default: null,
+    },
+  },
+  { _id: false }
+);
+
 const orderSchema = new mongoose.Schema(
   {
     motorcycle: {
@@ -100,6 +117,10 @@ const orderSchema = new mongoose.Schema(
     },
     labor: {
       type: [orderLaborSchema],
+      default: [],
+    },
+    findings: {
+      type: [orderFindingsSchema],
       default: [],
     },
     subtotalParts: {

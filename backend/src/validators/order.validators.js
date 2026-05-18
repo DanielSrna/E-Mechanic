@@ -103,3 +103,22 @@ export const removeLaborValidator = [
 export const orderIdValidator = [
   param('id').isMongoId().withMessage('Invalid order ID'),
 ];
+
+export const addFindingValidator = [
+  param('id').isMongoId().withMessage('Invalid order ID'),
+  body('title').trim().notEmpty().withMessage('Title is required'),
+  body('description')
+    .optional({ values: 'falsy' })
+    .trim()
+    .isLength({ max: 2000 })
+    .withMessage('Description must be at most 2000 characters'),
+];
+
+export const removeFindingValidator = [
+  param('id').isMongoId().withMessage('Invalid order ID'),
+  body('index')
+    .notEmpty()
+    .withMessage('Finding index is required')
+    .isInt({ min: 0 })
+    .withMessage('Index must be a non-negative integer'),
+];

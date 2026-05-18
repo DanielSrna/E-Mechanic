@@ -263,6 +263,31 @@ export async function generateInvoicePDF(invoiceData) {
         });
       }
 
+      if (order?.findings?.length) {
+        doc
+          .moveDown(0.5)
+          .fontSize(9)
+          .font('Helvetica-Bold')
+          .text('REPARACIÓN DE LOS SIGUIENTES HALLAZGOS', 50, doc.y)
+          .moveDown(0.5);
+
+        order.findings.forEach((f) => {
+          doc
+            .fontSize(8)
+            .font('Helvetica-Bold')
+            .text(`• ${f.title}`, 60, doc.y);
+          if (f.description) {
+            doc
+              .font('Helvetica')
+              .text(`  ${f.description}`, 65, doc.y)
+              .moveDown(0.2);
+          } else {
+            doc.moveDown(0.2);
+          }
+        });
+        doc.moveDown(0.5);
+      }
+
       if (order?.labor?.length) {
         order.labor.forEach((l) => {
           drawTableRow(doc, l.description, 1, l.cost, l.cost);

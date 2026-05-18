@@ -40,6 +40,7 @@ export default function App() {
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/mechanics" element={<MechanicList />} />
             <Route path="/mechanics/new" element={<MechanicForm />} />
+            <Route path="/mechanics/:id/edit" element={<MechanicForm />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

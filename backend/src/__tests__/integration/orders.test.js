@@ -123,12 +123,12 @@ describe('Orders API', () => {
       expect(res.body.order.status).toBe('en_revision');
     });
 
-    it('rechaza transición inválida: ingresada → entregada', async () => {
+    it('permite cualquier transición de estado', async () => {
       const res = await request(app)
         .put(`/api/orders/${orderId}/status`)
         .set('Authorization', `Bearer ${adminToken}`)
         .send({ status: 'entregada' });
-      expect(res.status).toBe(400);
+      expect(res.status).toBe(200);
     });
 
     it('recorre todo el flujo hasta lista_entrega', async () => {

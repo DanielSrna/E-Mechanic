@@ -15,6 +15,8 @@ import {
   addLaborValidator,
   removeLaborValidator,
   orderIdValidator,
+  addFindingValidator,
+  removeFindingValidator,
 } from '../validators/order.validators.js';
 
 router.use(verifyToken);
@@ -316,6 +318,21 @@ router
     orderIdValidator,
     validate,
     orderController.closeOrder
+  );
+
+router
+  .route('/:id/findings')
+  .put(
+    requireAssignedMechanic,
+    addFindingValidator,
+    validate,
+    orderController.addFindingToOrder
+  )
+  .delete(
+    requireAssignedMechanic,
+    removeFindingValidator,
+    validate,
+    orderController.removeFindingFromOrder
   );
 
 export default router;
