@@ -73,6 +73,12 @@ function sanitizeQuery(req, res, next) {
 }
 
 app.use(compression());
+app.use((req, res, next) => {
+  res.setTimeout(30000, () => {
+    res.status(408).json({ message: 'Request timeout' });
+  });
+  next();
+});
 app.use(generalLimiter);
 
 // Static files (uploads)

@@ -1,6 +1,7 @@
 import Motorcycle from '../models/motorcycle.model.js';
 import Order from '../models/order.model.js';
 import logger from '../utils/logger.js';
+import { paginate, paginatedResponse } from '../utils/pagination.js';
 
 export const createMotorcycle = async (req, res, next) => {
   logger.contexto('Iniciando controlador createMotorcycle');
@@ -41,26 +42,28 @@ export const getMotorcycles = async (req, res, next) => {
   logger.contexto('Iniciando controlador getMotorcycles');
 
   try {
-    const { plate, clientId } = req.query;
+    const { plate, clientId, page: p, limit: l } = req.query;
     const filter = {};
+    const pager = paginate({}, { page: p, limit: l });
 
-    if (plate) {
-      filter.plate = plate.toUpperCase();
-    }
-    if (clientId) {
-      filter.client = clientId;
-    }
+    if (plate) filter.plate = plate.toUpperCase();
+    if (clientId) filter.client = clientId;
 
     logger.proceso('Consultando motocicletas...');
-    const motorcycles = await Motorcycle.find(filter)
-      .populate('client', 'name phone email')
-      .sort({ createdAt: -1 })
-      .lean();
+    const [motorcycles, total] = await Promise.all([
+      Motorcycle.find(filter)
+        .populate('client', 'name phone email')
+        .sort({ createdAt: -1 })
+        .skip(pager.skip)
+        .limit(pager.limit)
+        .lean(),
+      Motorcycle.countDocuments(filter),
+    ]);
 
     logger.exito('Motocicletas obtenidas: %d encontradas', motorcycles.length);
 
     res.status(200).json({
-      count: motorcycles.length,
+      ...paginatedResponse(motorcycles, total, pager),
       motorcycles,
     });
   } catch (error) {

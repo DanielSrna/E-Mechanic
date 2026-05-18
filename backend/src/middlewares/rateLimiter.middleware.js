@@ -1,8 +1,10 @@
 import rateLimit from 'express-rate-limit';
 
+const isTest = process.env.NODE_ENV === 'test';
+
 export const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: process.env.NODE_ENV === 'test' ? 10000 : 500,
+  max: isTest ? 10000 : 500,
   standardHeaders: true,
   legacyHeaders: false,
   message: {
@@ -13,13 +15,12 @@ export const generalLimiter = rateLimit({
 
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: process.env.NODE_ENV === 'test' ? 10000 : 5,
+  max: isTest ? 10000 : 5,
   standardHeaders: true,
   legacyHeaders: false,
-  skipSuccessfulRequests: process.env.NODE_ENV !== 'test',
+  skipSuccessfulRequests: !isTest,
   message: {
     status: 429,
-    message:
-      'Credenciales incorrectas. Has alcanzado el límite de intentos. Intenta de nuevo en 15 minutos.',
+    message: 'Demasiados intentos fallidos. Intenta de nuevo en 15 minutos.',
   },
 });

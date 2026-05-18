@@ -1,6 +1,7 @@
 import Client from '../models/client.model.js';
 import Motorcycle from '../models/motorcycle.model.js';
 import logger from '../utils/logger.js';
+import { paginate, paginatedResponse } from '../utils/pagination.js';
 
 export const createClient = async (req, res, next) => {
   logger.contexto('Iniciando controlador createClient');
@@ -32,8 +33,9 @@ export const getClients = async (req, res, next) => {
   logger.contexto('Iniciando controlador getClients');
 
   try {
-    const { search } = req.query;
+    const { search, page: p, limit: l } = req.query;
     const filter = {};
+    const pager = paginate({}, { page: p, limit: l });
 
     if (search) {
       filter.$or = [
@@ -44,12 +46,19 @@ export const getClients = async (req, res, next) => {
     }
 
     logger.proceso('Consultando clientes en la base de datos...');
-    const clients = await Client.find(filter).sort({ createdAt: -1 }).lean();
+    const [clients, total] = await Promise.all([
+      Client.find(filter)
+        .sort({ createdAt: -1 })
+        .skip(pager.skip)
+        .limit(pager.limit)
+        .lean(),
+      Client.countDocuments(filter),
+    ]);
 
     logger.exito('Clientes obtenidos: %d encontrados', clients.length);
 
     res.status(200).json({
-      count: clients.length,
+      ...paginatedResponse(clients, total, pager),
       clients,
     });
   } catch (error) {

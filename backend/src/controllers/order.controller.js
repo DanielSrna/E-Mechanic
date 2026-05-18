@@ -4,6 +4,7 @@ import Motorcycle from '../models/motorcycle.model.js';
 import Part from '../models/part.model.js';
 import logger from '../utils/logger.js';
 import eventEmitter from '../events/eventEmitter.js';
+import { paginate, paginatedResponse } from '../utils/pagination.js';
 
 const TAX_RATE = 0.19;
 
@@ -55,8 +56,9 @@ export const getOrders = async (req, res, next) => {
   logger.contexto('Iniciando controlador getOrders');
 
   try {
-    const { status, mechanic, motorcycle, from, to } = req.query;
+    const { status, mechanic, motorcycle, from, to, page: p, limit: l } = req.query;
     const filter = {};
+    const pager = paginate({}, { page: p, limit: l });
 
     if (status) filter.status = status;
     if (mechanic) filter.mechanic = mechanic;
@@ -68,17 +70,22 @@ export const getOrders = async (req, res, next) => {
     }
 
     logger.proceso('Consultando órdenes con filtros: %o', filter);
-    const orders = await Order.find(filter)
-      .populate('motorcycle', 'plate brand model year')
-      .populate('client', 'name phone')
-      .populate('mechanic', 'name')
-      .sort({ createdAt: -1 })
-      .lean();
+    const [orders, total] = await Promise.all([
+      Order.find(filter)
+        .populate('motorcycle', 'plate brand model year')
+        .populate('client', 'name phone')
+        .populate('mechanic', 'name')
+        .sort({ createdAt: -1 })
+        .skip(pager.skip)
+        .limit(pager.limit)
+        .lean(),
+      Order.countDocuments(filter),
+    ]);
 
     logger.exito('Órdenes obtenidas: %d encontradas', orders.length);
 
     res.status(200).json({
-      count: orders.length,
+      ...paginatedResponse(orders, total, pager),
       orders,
     });
   } catch (error) {

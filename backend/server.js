@@ -32,11 +32,18 @@ try {
 
   process.on('SIGTERM', async () => {
     logger.proceso('SIGTERM recibido. Cerrando conexiones limpiamente...');
-    server.close(async () => {
+    const shutdownTimeout = setTimeout(() => {
+      logger.fracaso('Forzando cierre tras timeout de 10s');
+      process.exit(1);
+    }, 10000);
+
+    server.close(() => {
+      clearTimeout(shutdownTimeout);
       logger.exito('Servidor HTTP cerrado');
-      await mongoose.disconnect();
-      logger.exito('Conexión a MongoDB cerrada');
-      process.exit(0);
+      mongoose.disconnect().then(() => {
+        logger.exito('Conexión a MongoDB cerrada');
+        process.exit(0);
+      });
     });
   });
 

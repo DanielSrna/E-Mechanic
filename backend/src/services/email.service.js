@@ -97,13 +97,30 @@ export async function sendInvoiceEmail(invoiceData, pdfBuffer) {
 
   try {
     logger.proceso('Enviando email...');
-    const info = await transport.sendMail(mailOptions);
+    const info = await sendWithRetry(transport, mailOptions);
     logger.exito('Email enviado: %s', info.messageId);
     return { success: true, messageId: info.messageId };
   } catch (error) {
-    logger.fracaso('Error enviando email: %s', error.message);
+    logger.fracaso('Error enviando email tras reintentos: %s', error.message);
     return { success: false, reason: error.message };
   }
+}
+
+async function sendWithRetry(transport, mailOptions, maxRetries = 3) {
+  let lastError;
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await transport.sendMail(mailOptions);
+    } catch (error) {
+      lastError = error;
+      if (attempt < maxRetries) {
+        const delay = Math.min(1000 * Math.pow(2, attempt - 1), 10000);
+        logger.proceso('Reintento %d de email en %dms...', attempt, delay);
+        await new Promise((r) => setTimeout(r, delay));
+      }
+    }
+  }
+  throw lastError;
 }
 
 export async function verifySMTPConnection() {

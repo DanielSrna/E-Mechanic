@@ -1,6 +1,7 @@
 import Part from '../models/part.model.js';
 import Order from '../models/order.model.js';
 import logger from '../utils/logger.js';
+import { paginate, paginatedResponse } from '../utils/pagination.js';
 
 export const createPart = async (req, res, next) => {
   logger.contexto('Iniciando controlador createPart');
@@ -54,8 +55,9 @@ export const getParts = async (req, res, next) => {
   logger.contexto('Iniciando controlador getParts');
 
   try {
-    const { search, lowStock } = req.query;
+    const { search, lowStock, page: p, limit: l } = req.query;
     const filter = {};
+    const pager = paginate({}, { page: p, limit: l });
 
     if (search) {
       filter.$or = [
@@ -64,18 +66,19 @@ export const getParts = async (req, res, next) => {
         { brand: { $regex: search, $options: 'i' } },
       ];
     }
-
     if (lowStock === 'true') {
       filter.$expr = { $lte: ['$stock', '$minStock'] };
     }
 
-    logger.proceso('Consultando repuestos con filtros...');
-    const parts = await Part.find(filter).sort({ name: 1 }).lean();
+    const [parts, total] = await Promise.all([
+      Part.find(filter).sort({ name: 1 }).skip(pager.skip).limit(pager.limit).lean(),
+      Part.countDocuments(filter),
+    ]);
 
     logger.exito('Repuestos obtenidos: %d encontrados', parts.length);
 
     res.status(200).json({
-      count: parts.length,
+      ...paginatedResponse(parts, total, pager),
       parts,
     });
   } catch (error) {
