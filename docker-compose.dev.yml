@@ -1,0 +1,41 @@
+services:
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: emechanic-api
+    ports:
+      - '${PORT:-3000}:3000'
+    env_file:
+      - ./backend/.env
+    depends_on:
+      mongo:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - ./backend/uploads:/app/uploads
+    networks:
+      - emechanic
+
+  mongo:
+    image: mongo:8
+    container_name: emechanic-mongo
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo-data:/data/db
+    restart: unless-stopped
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - emechanic
+
+networks:
+  emechanic:
+    driver: bridge
+
+volumes:
+  mongo-data:

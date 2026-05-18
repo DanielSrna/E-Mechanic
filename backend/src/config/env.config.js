@@ -37,6 +37,7 @@ const envSchema = z.object({
   GCS_CLIENT_EMAIL: z.string().optional(),
   GCS_PRIVATE_KEY: z.string().optional(),
   REDIS_URL: z.string().optional(),
+  SWAGGER_SERVER_URL: z.string().optional(),
 });
 
 // 2. Comparamos el esquema con lo que realmente hay en process.env

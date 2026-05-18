@@ -1,4 +1,5 @@
 import swaggerJsdoc from 'swagger-jsdoc';
+import { env } from './env.config.js';
 
 const options = {
   definition: {
@@ -7,15 +8,13 @@ const options = {
       title: 'E-Mechanic API',
       version: '1.0.0',
       description:
-        'API para gestión integral de talleres mecánicos de motocicletas. Sistema ERP con módulos de clientes, vehículos, órdenes de trabajo, inventario y facturación.',
-      contact: {
-        name: 'Daniel Felipe Serna Lopez',
-      },
+        'API para gestión integral de talleres mecánicos de motocicletas.',
+      contact: { name: 'Daniel Felipe Serna López' },
     },
     servers: [
       {
-        url: 'http://localhost:3000',
-        description: 'Servidor de desarrollo',
+        url: env.SWAGGER_SERVER_URL || `http://localhost:${env.PORT}`,
+        description: env.NODE_ENV === 'production' ? 'Producción' : 'Desarrollo',
       },
     ],
     components: {
