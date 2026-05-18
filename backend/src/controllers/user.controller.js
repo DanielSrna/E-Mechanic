@@ -287,29 +287,17 @@ export const fireMechanic = async (req, res, next) => {
 
     if (reassignTo && activeOrders.length > 0) {
       const target = await User.findById(reassignTo);
-      if (!target)
-        return res
-          .status(404)
-          .json({ message: 'Reassignment target not found' });
-
+      if (!target || target.rol !== 'mecanico' || !target.isActive) {
+        return res.status(400).json({ message: 'Reassignment target must be an active mechanic' });
+      }
       await Order.updateMany(
         { mechanic: id, status: { $nin: ['entregada', 'cancelada'] } },
         { mechanic: reassignTo }
       );
-      logger.exito(
-        '%d órdenes reasignadas de %s a %s',
-        activeOrders.length,
-        mechanic.name,
-        target.name
-      );
+      logger.exito('%d órdenes reasignadas de %s a %s', activeOrders.length, mechanic.name, target.name);
     } else if (activeOrders.length > 0) {
       const leastBusy = await Order.aggregate([
-        {
-          $match: {
-            status: { $nin: ['entregada', 'cancelada'] },
-            mechanic: { $ne: mechanic._id },
-          },
-        },
+        { $match: { status: { $nin: ['entregada', 'cancelada'] }, mechanic: { $ne: mechanic._id } } },
         { $group: { _id: '$mechanic', count: { $sum: 1 } } },
         { $sort: { count: 1 } },
         { $limit: 1 },
@@ -320,10 +308,11 @@ export const fireMechanic = async (req, res, next) => {
           { mechanic: id, status: { $nin: ['entregada', 'cancelada'] } },
           { mechanic: leastBusy[0]._id }
         );
-        logger.exito(
-          '%d órdenes reasignadas al mecánico menos ocupado',
-          activeOrders.length
-        );
+        logger.exito('%d órdenes reasignadas al mecánico menos ocupado', activeOrders.length);
+      } else {
+        return res.status(400).json({
+          message: `Cannot fire mechanic: no other active mechanics available to reassign ${activeOrders.length} active order(s).`,
+        });
       }
     }
 

@@ -56,11 +56,11 @@ const settingsSchema = new mongoose.Schema(
 );
 
 settingsSchema.statics.getSettings = async function () {
-  let settings = await this.findOne();
-  if (!settings) {
-    settings = await this.create({});
-  }
-  return settings;
+  return await this.findOneAndUpdate(
+    {},
+    { $setOnInsert: {} },
+    { upsert: true, returnDocument: 'after' }
+  );
 };
 
 const Settings = mongoose.model('Settings', settingsSchema);

@@ -23,8 +23,11 @@ const motorcycleSchema = new mongoose.Schema(
     year: {
       type: Number,
       required: true,
-      min: 1950,
-      max: new Date().getFullYear() + 1,
+      validate: {
+        validator: (v) => v >= 1950 && v <= new Date().getFullYear() + 1,
+        message: () =>
+          `Year must be between 1950 and ${new Date().getFullYear() + 1}`,
+      },
     },
     mileage: {
       type: Number,

@@ -19,7 +19,7 @@ const clientSchema = new mongoose.Schema(
       type: String,
       lowercase: true,
       trim: true,
-      match: /.+@.+\..+/,
+      match: /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/,
       default: null,
     },
     address: {

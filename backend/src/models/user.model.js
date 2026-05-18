@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema(
       required: true,
       lowercase: true,
       trim: true,
-      match: /.+@.+\..+/,
+      match: /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/,
     },
     password: {
       type: String,

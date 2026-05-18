@@ -1,4 +1,5 @@
 import Motorcycle from '../models/motorcycle.model.js';
+import Order from '../models/order.model.js';
 import logger from '../utils/logger.js';
 
 export const createMotorcycle = async (req, res, next) => {
@@ -134,6 +135,13 @@ export const deleteMotorcycle = async (req, res, next) => {
 
   try {
     const { id } = req.params;
+
+    const linkedOrders = await Order.countDocuments({ motorcycle: id });
+    if (linkedOrders > 0) {
+      return res.status(409).json({
+        message: `Cannot delete motorcycle: has ${linkedOrders} work order(s) associated.`,
+      });
+    }
 
     logger.proceso('Eliminando motocicleta...');
     const motorcycle = await Motorcycle.findByIdAndDelete(id);

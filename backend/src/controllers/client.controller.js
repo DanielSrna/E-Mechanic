@@ -1,4 +1,5 @@
 import Client from '../models/client.model.js';
+import Motorcycle from '../models/motorcycle.model.js';
 import logger from '../utils/logger.js';
 
 export const createClient = async (req, res, next) => {
@@ -113,6 +114,13 @@ export const deleteClient = async (req, res, next) => {
 
   try {
     const { id } = req.params;
+
+    const linkedMotos = await Motorcycle.countDocuments({ client: id });
+    if (linkedMotos > 0) {
+      return res.status(409).json({
+        message: `Cannot delete client: has ${linkedMotos} motorcycle(s) registered.`,
+      });
+    }
 
     logger.proceso('Eliminando cliente...');
     const client = await Client.findByIdAndDelete(id);

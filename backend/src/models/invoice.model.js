@@ -59,14 +59,5 @@ const invoiceSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-invoiceSchema.statics.generateInvoiceNumber = async function () {
-  const year = new Date().getFullYear();
-  const count = await this.countDocuments({
-    invoiceNumber: new RegExp(`^FEM-${year}-`),
-  });
-  const nextNumber = String(count + 1).padStart(6, '0');
-  return `FEM-${year}-${nextNumber}`;
-};
-
 const Invoice = mongoose.model('Invoice', invoiceSchema);
 export default Invoice;

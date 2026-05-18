@@ -1,6 +1,7 @@
 import eventEmitter from '../eventEmitter.js';
 import Invoice from '../../models/invoice.model.js';
 import Settings from '../../models/settings.model.js';
+import { getNextInvoiceNumber } from '../../models/counter.model.js';
 import { generateInvoicePDF } from '../../services/pdf.service.js';
 import { sendInvoiceEmail } from '../../services/email.service.js';
 import logger from '../../utils/logger.js';
@@ -9,7 +10,7 @@ eventEmitter.on('order:closed', async ({ orderId, clientEmail, orderData }) => {
   logger.contexto('Evento order:closed recibido para orden %s', orderId);
 
   try {
-    const invoiceNumber = await Invoice.generateInvoiceNumber();
+    const invoiceNumber = await getNextInvoiceNumber();
     const settings = await Settings.getSettings();
     const company = {
       name: settings.appName || 'E-Mechanic',

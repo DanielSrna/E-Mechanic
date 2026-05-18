@@ -1,4 +1,5 @@
 import Part from '../models/part.model.js';
+import Order from '../models/order.model.js';
 import logger from '../utils/logger.js';
 
 export const createPart = async (req, res, next) => {
@@ -148,6 +149,15 @@ export const deletePart = async (req, res, next) => {
 
   try {
     const { id } = req.params;
+
+    const usedInOrders = await Order.countDocuments({
+      'partsUsed.part': id,
+    });
+    if (usedInOrders > 0) {
+      return res.status(409).json({
+        message: `Cannot delete part: it is used in ${usedInOrders} work order(s).`,
+      });
+    }
 
     logger.proceso('Eliminando repuesto...');
     const part = await Part.findByIdAndDelete(id);
