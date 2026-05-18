@@ -7,6 +7,16 @@ import './src/events/listeners/order.listeners.js';
 
 const PORT = env.PORT;
 
+process.on('unhandledRejection', (reason, promise) => {
+  logger.fracaso('Unhandled Rejection at: %s, reason: %s', promise, reason);
+});
+
+process.on('uncaughtException', (error) => {
+  logger.fracaso('Uncaught Exception: %s', error.message);
+  if (error.stack) logger.fracaso(error.stack);
+  process.exit(1);
+});
+
 try {
   logger.proceso('Iniciando la conexión a la base de datos...');
   await connectDB();

@@ -1,8 +1,8 @@
 import express from 'express';
 import helmet from 'helmet';
-import hpp from 'hpp';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import compression from 'compression';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import swaggerUi from 'swagger-ui-express';
@@ -27,17 +27,52 @@ import statsRoutes from './src/routes/stats.routes.js';
 import settingsRoutes from './src/routes/settings.routes.js';
 
 // Middlewares
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(
   cors({
     origin: env.FRONTEND_URL.split(',').map((s) => s.trim()),
     credentials: true,
   })
 );
-app.use(helmet());
-app.use(hpp());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+        fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+        imgSrc: ["'self'", 'data:', 'https://storage.googleapis.com'],
+        connectSrc: ["'self'"],
+      },
+    },
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+    strictTransportSecurity:
+      env.NODE_ENV === 'production'
+        ? { maxAge: 31536000, includeSubDomains: true }
+        : false,
+  })
+);
 app.use(cookieParser());
+
+function sanitizeQuery(req, res, next) {
+  if (req.query) {
+    const sanitize = (obj) => {
+      for (const key in obj) {
+        if (typeof obj[key] === 'string' && (obj[key].startsWith('$') || obj[key].includes('.') && !obj[key].includes('@'))) {
+          delete obj[key];
+        } else if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
+          sanitize(obj[key]);
+        }
+      }
+    };
+    sanitize(req.query);
+  }
+  next();
+}
+
+app.use(compression());
 app.use(generalLimiter);
 
 // Static files (uploads)

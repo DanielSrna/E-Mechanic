@@ -12,7 +12,16 @@ const envSchema = z.object({
   NODE_ENV: z
     .enum(['development', 'production', 'test'])
     .default('development'),
-  FRONTEND_URL: z.string().default('http://localhost:5173'),
+  FRONTEND_URL: z
+    .string()
+    .default('http://localhost:5173')
+    .refine(
+      (val) => val.split(',').every((u) => /^https?:\/\/.+/.test(u.trim())),
+      {
+        message:
+          'FRONTEND_URL debe ser una URL válida o múltiples separadas por coma',
+      }
+    ),
   JWT_SECRET: z.string().min(10),
   JWT_SECRET_EXPIRES_IN: z.string().default('1d'),
   JWT_REFRESH_SECRET: z.string().min(10),

@@ -7,10 +7,17 @@ let transporter = null;
 function getTransporter() {
   if (transporter) return transporter;
 
-  const host = env.SMTP_HOST || 'sandbox.smtp.mailtrap.io';
+  if (!env.SMTP_HOST || !env.SMTP_USER || !env.SMTP_PASS) {
+    logger.fracaso(
+      'SMTP no configurado. Define SMTP_HOST, SMTP_USER y SMTP_PASS en .env. Los emails no se enviarán.'
+    );
+    return null;
+  }
+
+  const host = env.SMTP_HOST;
   const port = env.SMTP_PORT || 587;
-  const user = env.SMTP_USER || '23621cc4d57bb0';
-  const pass = env.SMTP_PASS || 'bd762e4410ae48';
+  const user = env.SMTP_USER;
+  const pass = env.SMTP_PASS;
 
   logger.proceso('Configurando transporte SMTP: %s:%d', host, port);
 
@@ -29,13 +36,17 @@ export async function sendInvoiceEmail(invoiceData, pdfBuffer) {
 
   const transport = getTransporter();
 
+  if (!transport) {
+    return { success: false, reason: 'smtp_not_configured' };
+  }
+
   const { invoiceNumber, order, client, motorcycle, total, company } =
     invoiceData;
   const appName = company?.companyName || company?.name || 'E-Mechanic';
   const totalFormatted = `$${Number(total).toLocaleString('es-CO')}`;
 
   const mailOptions = {
-    from: `"${appName}" <${env.SMTP_USER || '23621cc4d57bb0'}>`,
+    from: `"${appName}" <${env.SMTP_USER || 'no-reply@emechanic.com'}>`,
     to: invoiceData.sentToEmail,
     subject: `Factura ${invoiceNumber} - ${appName}`,
     html: `
@@ -97,6 +108,7 @@ export async function sendInvoiceEmail(invoiceData, pdfBuffer) {
 
 export async function verifySMTPConnection() {
   const transport = getTransporter();
+  if (!transport) return false;
   try {
     await transport.verify();
     logger.exito('Conexión SMTP verificada exitosamente');
