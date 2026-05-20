@@ -1,15 +1,26 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useSettings } from '../../context/SettingsContext';
+import {
+  LayoutDashboard,
+  Users,
+  Gauge,
+  UserCog,
+  Wrench,
+  Package,
+  Settings,
+  Store,
+  LogOut,
+} from 'lucide-react';
 
 const navItems = [
-  { to: '/', label: 'Dashboard', icon: '📊', adminOnly: true },
-  { to: '/clients', label: 'Clientes', icon: '👥', adminOnly: false },
-  { to: '/motorcycles', label: 'Motocicletas', icon: '🏍️', adminOnly: false },
-  { to: '/mechanics', label: 'Mecánicos', icon: '👨‍🔧', adminOnly: true },
-  { to: '/orders', label: 'Órdenes', icon: '🔧', adminOnly: false },
-  { to: '/inventory', label: 'Inventario', icon: '📦', adminOnly: false },
-  { to: '/settings', label: 'Configuración', icon: '⚙️', adminOnly: true },
+  { to: '/', label: 'Dashboard', Icon: LayoutDashboard, adminOnly: true },
+  { to: '/clients', label: 'Clientes', Icon: Users, adminOnly: false },
+  { to: '/motorcycles', label: 'Motocicletas', Icon: Gauge, adminOnly: false },
+  { to: '/mechanics', label: 'Mecánicos', Icon: UserCog, adminOnly: true },
+  { to: '/orders', label: 'Órdenes', Icon: Wrench, adminOnly: false },
+  { to: '/inventory', label: 'Inventario', Icon: Package, adminOnly: false },
+  { to: '/settings', label: 'Configuración', Icon: Settings, adminOnly: true },
 ];
 
 export default function Sidebar({ open, onClose }) {
@@ -17,7 +28,7 @@ export default function Sidebar({ open, onClose }) {
   const location = useLocation();
   const { settings } = useSettings();
 
-  const visibleItems = navItems.filter(i => !i.adminOnly || isAdmin);
+  const visibleItems = navItems.filter((i) => !i.adminOnly || isAdmin);
 
   return (
     <aside
@@ -30,7 +41,7 @@ export default function Sidebar({ open, onClose }) {
         {settings?.logo ? (
           <img src={settings.logo} alt="Logo" className="w-9 h-9 rounded object-cover" />
         ) : (
-          <span className="text-2xl">🏍️</span>
+          <Store className="w-8 h-8 text-white" />
         )}
         <span className="text-white font-bold text-lg truncate">
           {settings?.appName || 'E-Mechanic'}
@@ -38,7 +49,10 @@ export default function Sidebar({ open, onClose }) {
       </div>
       <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto scrollbar-thin">
         {visibleItems.map((item) => {
-          const active = item.to === '/' ? location.pathname === '/' : location.pathname.startsWith(item.to);
+          const active =
+            item.to === '/'
+              ? location.pathname === '/'
+              : location.pathname.startsWith(item.to);
           return (
             <NavLink
               key={item.to}
@@ -51,7 +65,7 @@ export default function Sidebar({ open, onClose }) {
               }`}
               style={active ? { background: settings?.primaryColor || '#2563eb' } : {}}
             >
-              <span className="text-lg">{item.icon}</span>
+              <item.Icon className="w-5 h-5" />
               {item.label}
             </NavLink>
           );
@@ -59,8 +73,10 @@ export default function Sidebar({ open, onClose }) {
       </nav>
       <div className="p-4 border-t border-white/10">
         <div className="flex items-center gap-3 mb-3">
-          <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold"
-            style={{ background: settings?.primaryColor || '#2563eb' }}>
+          <div
+            className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold"
+            style={{ background: settings?.primaryColor || '#2563eb' }}
+          >
             {user?.name?.charAt(0)}
           </div>
           <div className="flex-1 min-w-0">
@@ -68,7 +84,11 @@ export default function Sidebar({ open, onClose }) {
             <p className="text-white/50 text-xs truncate">{user?.rol}</p>
           </div>
         </div>
-        <button onClick={logout} className="w-full py-2.5 rounded-lg text-sm font-medium transition bg-red-500/20 hover:bg-red-500/40 text-red-300 hover:text-white">
+        <button
+          onClick={logout}
+          className="w-full py-2.5 rounded-lg text-sm font-medium transition bg-red-500/20 hover:bg-red-500/40 text-red-300 hover:text-white flex items-center justify-center gap-2"
+        >
+          <LogOut className="w-4 h-4" />
           Cerrar sesión
         </button>
       </div>

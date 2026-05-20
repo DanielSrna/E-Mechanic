@@ -1,5 +1,6 @@
 import { useAuth } from '../../context/AuthContext';
 import { useSettings } from '../../context/SettingsContext';
+import { Store } from 'lucide-react';
 
 export default function Header({ onMenuClick }) {
   const { user } = useAuth();
@@ -16,7 +17,7 @@ export default function Header({ onMenuClick }) {
         {settings?.logo ? (
           <img src={settings.logo} alt="Logo" className="h-8 w-auto object-contain" />
         ) : (
-          <span className="text-xl">🏍️</span>
+          <Store className="w-6 h-6 text-slate-500" />
         )}
         <span className="font-semibold text-slate-700 hidden sm:inline">{settings?.appName || 'E-Mechanic'}</span>
       </div>

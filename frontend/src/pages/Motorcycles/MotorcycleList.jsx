@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { User } from 'lucide-react';
 import api from '../../api/axios';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
@@ -47,7 +48,7 @@ export default function MotorcycleList() {
               <span className="text-xs text-slate-400">{m.year}</span>
             </div>
             <p className="text-sm text-slate-500">{Number(m.mileage).toLocaleString()} km</p>
-            {m.client && <p className="text-sm text-slate-400 mt-1">👤 {m.client.name}</p>}
+            {m.client && <p className="text-sm text-slate-400 mt-1 flex items-center gap-1"><User className="w-3 h-3" /> {m.client.name}</p>}
             <div className="flex gap-3 mt-4 pt-3 border-t border-slate-100">
               <Link to={`/motorcycles/${m._id}/edit`} className="text-blue-600 text-xs font-medium hover:underline">Editar</Link>
               <Link to={`/orders/new?moto=${m._id}`} className="text-green-600 text-xs font-medium hover:underline">Crear OT</Link>

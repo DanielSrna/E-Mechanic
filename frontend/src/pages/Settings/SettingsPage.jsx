@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import api from '../../api/axios';
 import toast from 'react-hot-toast';
 import { useSettings } from '../../context/SettingsContext';
+import { Store } from 'lucide-react';
 
 export default function SettingsPage() {
   const { settings, updateSettings } = useSettings();
@@ -48,7 +49,9 @@ export default function SettingsPage() {
           {settings?.logo ? (
             <img src={settings.logo} alt="Logo" className="w-20 h-20 rounded-xl object-cover border" />
           ) : (
-            <div className="w-20 h-20 rounded-xl bg-slate-100 flex items-center justify-center text-3xl">🏍️</div>
+            <div className="w-20 h-20 rounded-xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+              <Store className="w-8 h-8 text-slate-400" />
+            </div>
           )}
           <label className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm cursor-pointer hover:bg-blue-700">
             {logoUpload ? 'Subiendo...' : 'Cambiar Logo'}
