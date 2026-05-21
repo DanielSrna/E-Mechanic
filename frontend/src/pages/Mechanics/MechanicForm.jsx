@@ -27,6 +27,7 @@ export default function MechanicForm() {
         navigate('/mechanics');
       }).finally(() => setFetching(false));
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const handleSubmit = async (e) => {

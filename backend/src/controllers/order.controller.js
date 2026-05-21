@@ -56,7 +56,15 @@ export const getOrders = async (req, res, next) => {
   logger.contexto('Iniciando controlador getOrders');
 
   try {
-    const { status, mechanic, motorcycle, from, to, page: p, limit: l } = req.query;
+    const {
+      status,
+      mechanic,
+      motorcycle,
+      from,
+      to,
+      page: p,
+      limit: l,
+    } = req.query;
     const filter = {};
     const pager = paginate({}, { page: p, limit: l });
 
@@ -224,7 +232,6 @@ export const addPartToOrder = async (req, res, next) => {
 
     if (part.stock <= part.minStock) {
       eventEmitter.emit('inventory:low-stock', {
-        partId: part._id,
         sku: part.sku,
         name: part.name,
         stock: part.stock,

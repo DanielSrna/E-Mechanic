@@ -55,6 +55,8 @@ router
     userController.createMechanic
   );
 
+router.route('/change-password').put(userController.changePassword);
+
 router
   .route('/:id')
   .get(requireRole('admin'), userController.getMechanicById)
@@ -83,7 +85,5 @@ router
       }
     }
   );
-
-router.route('/change-password').put(userController.changePassword);
 
 export default router;

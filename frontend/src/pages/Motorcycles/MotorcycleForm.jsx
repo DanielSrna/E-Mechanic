@@ -21,6 +21,7 @@ export default function MotorcycleForm() {
         setImages(m.images || []);
       }).catch(() => navigate('/motorcycles'));
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const handleSubmit = async (e) => {

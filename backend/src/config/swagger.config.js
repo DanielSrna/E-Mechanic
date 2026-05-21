@@ -14,7 +14,8 @@ const options = {
     servers: [
       {
         url: env.SWAGGER_SERVER_URL || `http://localhost:${env.PORT}`,
-        description: env.NODE_ENV === 'production' ? 'Producción' : 'Desarrollo',
+        description:
+          env.NODE_ENV === 'production' ? 'Producción' : 'Desarrollo',
       },
     ],
     components: {

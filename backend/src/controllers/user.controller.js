@@ -273,7 +273,7 @@ export const fireMechanic = async (req, res, next) => {
   logger.contexto('Iniciando controlador fireMechanic');
   try {
     const { id } = req.params;
-    const { reassignTo } = req.body;
+    const reassignTo = req.body?.reassignTo ?? undefined;
 
     const mechanic = await User.findById(id);
     if (!mechanic) return res.status(404).json({ message: 'User not found' });
@@ -288,16 +288,28 @@ export const fireMechanic = async (req, res, next) => {
     if (reassignTo && activeOrders.length > 0) {
       const target = await User.findById(reassignTo);
       if (!target || target.rol !== 'mecanico' || !target.isActive) {
-        return res.status(400).json({ message: 'Reassignment target must be an active mechanic' });
+        return res
+          .status(400)
+          .json({ message: 'Reassignment target must be an active mechanic' });
       }
       await Order.updateMany(
         { mechanic: id, status: { $nin: ['entregada', 'cancelada'] } },
         { mechanic: reassignTo }
       );
-      logger.exito('%d órdenes reasignadas de %s a %s', activeOrders.length, mechanic.name, target.name);
+      logger.exito(
+        '%d órdenes reasignadas de %s a %s',
+        activeOrders.length,
+        mechanic.name,
+        target.name
+      );
     } else if (activeOrders.length > 0) {
       const leastBusy = await Order.aggregate([
-        { $match: { status: { $nin: ['entregada', 'cancelada'] }, mechanic: { $ne: mechanic._id } } },
+        {
+          $match: {
+            status: { $nin: ['entregada', 'cancelada'] },
+            mechanic: { $ne: mechanic._id },
+          },
+        },
         { $group: { _id: '$mechanic', count: { $sum: 1 } } },
         { $sort: { count: 1 } },
         { $limit: 1 },
@@ -308,7 +320,10 @@ export const fireMechanic = async (req, res, next) => {
           { mechanic: id, status: { $nin: ['entregada', 'cancelada'] } },
           { mechanic: leastBusy[0]._id }
         );
-        logger.exito('%d órdenes reasignadas al mecánico menos ocupado', activeOrders.length);
+        logger.exito(
+          '%d órdenes reasignadas al mecánico menos ocupado',
+          activeOrders.length
+        );
       } else {
         return res.status(400).json({
           message: `Cannot fire mechanic: no other active mechanics available to reassign ${activeOrders.length} active order(s).`,
@@ -335,17 +350,23 @@ export const changePassword = async (req, res, next) => {
   try {
     const { currentPassword, newPassword } = req.body;
     if (!currentPassword || !newPassword) {
-      return res.status(400).json({ message: 'Current and new password required' });
+      return res
+        .status(400)
+        .json({ message: 'Current and new password required' });
     }
     if (newPassword.length < 6) {
-      return res.status(400).json({ message: 'New password must be at least 6 characters' });
+      return res
+        .status(400)
+        .json({ message: 'New password must be at least 6 characters' });
     }
-    const isMatch = await req.user.comparePassword(currentPassword);
+    const user = await User.findById(req.user._id).select('+password');
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    const isMatch = await user.comparePassword(currentPassword);
     if (!isMatch) {
       return res.status(400).json({ message: 'Current password is incorrect' });
     }
-    req.user.password = newPassword;
-    await req.user.save();
+    user.password = newPassword;
+    await user.save();
     logger.exito('Contraseña cambiada para %s', req.user.email);
     res.status(200).json({ message: 'Password changed successfully' });
   } catch (error) {
@@ -353,4 +374,3 @@ export const changePassword = async (req, res, next) => {
     next(error);
   }
 };
-

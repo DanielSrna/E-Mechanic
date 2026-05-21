@@ -14,6 +14,7 @@ export default function PartForm() {
       const p = r.data.part;
       setForm({ sku: p.sku, name: p.name, brand: p.brand || '', description: p.description || '', purchasePrice: p.purchasePrice, salePrice: p.salePrice, stock: p.stock, minStock: p.minStock });
     }).catch(() => navigate('/inventory'));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const handleSubmit = async (e) => {

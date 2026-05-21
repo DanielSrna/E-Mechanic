@@ -71,7 +71,11 @@ export const getParts = async (req, res, next) => {
     }
 
     const [parts, total] = await Promise.all([
-      Part.find(filter).sort({ name: 1 }).skip(pager.skip).limit(pager.limit).lean(),
+      Part.find(filter)
+        .sort({ name: 1 })
+        .skip(pager.skip)
+        .limit(pager.limit)
+        .lean(),
       Part.countDocuments(filter),
     ]);
 

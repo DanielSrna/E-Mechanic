@@ -11,6 +11,7 @@ export default function ClientForm() {
 
   useEffect(() => {
     if (id) api.get(`/clients/${id}`).then(r => setForm({ name: r.data.client.name, phone: r.data.client.phone, email: r.data.client.email || '', address: r.data.client.address || '' })).catch(() => navigate('/clients'));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const handleSubmit = async (e) => {

@@ -19,7 +19,8 @@ export default function PartList() {
     api.get(`/parts${params.length ? '?' + params.join('&') : ''}`).then(r => setParts(r.data.parts)).finally(() => setLoading(false));
   };
 
-  useEffect(() => { fetch(); }, [lowStock]);
+  useEffect(() => { fetch(); }, [lowStock, search]);
+   
 
   const handleDelete = async (id, name) => {
     if (!confirm(`¿Eliminar ${name}?`)) return;
