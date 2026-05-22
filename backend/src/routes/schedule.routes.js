@@ -30,9 +30,7 @@ router.use(verifyToken);
  *       200:
  *         description: Capacidad por día
  */
-router
-  .route('/')
-  .get(requireRole('admin'), scheduleController.getSchedule);
+router.route('/').get(requireRole('admin'), scheduleController.getSchedule);
 
 /**
  * @swagger

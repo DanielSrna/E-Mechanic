@@ -12,7 +12,16 @@ export const createOrder = async (req, res, next) => {
   logger.contexto('Iniciando controlador createOrder');
 
   try {
-    const { motorcycle, mechanic, entryReason, notes } = req.body;
+    const {
+      motorcycle,
+      mechanic,
+      entryReason,
+      notes,
+      serviceType,
+      scheduledDate,
+      estimatedDays,
+      priority,
+    } = req.body;
 
     logger.proceso('Verificando motocicleta...');
     const moto = await Motorcycle.findById(motorcycle).populate('client');
@@ -27,6 +36,10 @@ export const createOrder = async (req, res, next) => {
       mechanic,
       entryReason,
       notes,
+      serviceType,
+      scheduledDate,
+      estimatedDays,
+      priority,
     });
     await order.save();
 

@@ -13,12 +13,6 @@ function formatDate(date) {
   return date.toISOString().split('T')[0];
 }
 
-function addDays(date, days) {
-  const result = new Date(date);
-  result.setDate(result.getDate() + days);
-  return result;
-}
-
 function isWeekend(date) {
   const day = date.getDay();
   return day === 0 || day === 6;
@@ -30,9 +24,9 @@ export const getSchedule = async (req, res, next) => {
     const { from, to } = req.query;
 
     if (!from || !to) {
-      return res
-        .status(400)
-        .json({ message: 'from and to query params are required (YYYY-MM-DD)' });
+      return res.status(400).json({
+        message: 'from and to query params are required (YYYY-MM-DD)',
+      });
     }
 
     const settings = await Settings.getSettings();
@@ -53,7 +47,9 @@ export const getSchedule = async (req, res, next) => {
       },
       status: { $nin: ['entregada', 'cancelada'] },
     })
-      .select('motorcycle client serviceType scheduledDate estimatedDays priority status')
+      .select(
+        'motorcycle client serviceType scheduledDate estimatedDays priority status'
+      )
       .populate('motorcycle', 'plate brand model')
       .populate('client', 'name')
       .lean();
@@ -64,7 +60,8 @@ export const getSchedule = async (req, res, next) => {
     while (current <= toDate) {
       const dateKey = formatDate(current);
       const dayOrders = orders.filter(
-        (o) => o.scheduledDate && formatDate(new Date(o.scheduledDate)) === dateKey
+        (o) =>
+          o.scheduledDate && formatDate(new Date(o.scheduledDate)) === dateKey
       );
 
       const usedUnits = dayOrders.reduce(

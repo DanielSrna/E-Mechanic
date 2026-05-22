@@ -40,3 +40,11 @@ body {
 
 .scrollbar-thin::-webkit-scrollbar { width: 6px; }
 .scrollbar-thin::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+
+.kanban-column-scroll::-webkit-scrollbar { width: 4px; }
+.kanban-column-scroll::-webkit-scrollbar-track { background: transparent; }
+.kanban-column-scroll::-webkit-scrollbar-thumb { background: transparent; transition: background 0.2s; }
+.kanban-column-scroll:hover::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+.dark .kanban-column-scroll:hover::-webkit-scrollbar-thumb { background: #475569; }
+
+.kanban-board { scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }

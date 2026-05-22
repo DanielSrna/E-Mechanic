@@ -97,6 +97,28 @@ describe('Orders API', () => {
         });
       expect(res.status).toBe(400);
     });
+
+    it('crea orden con tipo de trabajo, prioridad y fecha programada', async () => {
+      const tomorrow = new Date(Date.now() + 86400000)
+        .toISOString()
+        .split('T')[0];
+      const res = await request(app)
+        .post('/api/orders')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          motorcycle: motorcycleId,
+          mechanic: adminId,
+          entryReason: 'Cambio de aceite',
+          serviceType: 'rapido',
+          priority: 'alta',
+          scheduledDate: tomorrow,
+          estimatedDays: 0.5,
+        });
+      expect(res.status).toBe(201);
+      expect(res.body.order.serviceType).toBe('rapido');
+      expect(res.body.order.priority).toBe('alta');
+      expect(res.body.order.estimatedDays).toBe(0.5);
+    });
   });
 
   describe('Máquina de estados', () => {
@@ -128,6 +150,15 @@ describe('Orders API', () => {
         .put(`/api/orders/${orderId}/status`)
         .set('Authorization', `Bearer ${adminToken}`)
         .send({ status: 'entregada' });
+      expect(res.status).toBe(400);
+      expect(res.body.message).toContain('Transición inválida');
+    });
+
+    it('rechaza ingresada → en_reparacion (falta pasar por revisión)', async () => {
+      const res = await request(app)
+        .put(`/api/orders/${orderId}/status`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ status: 'en_reparacion' });
       expect(res.status).toBe(400);
       expect(res.body.message).toContain('Transición inválida');
     });

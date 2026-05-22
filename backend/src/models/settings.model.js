@@ -85,10 +85,34 @@ const settingsSchema = new mongoose.Schema(
     serviceTypes: {
       type: [serviceTypeSchema],
       default: [
-        { name: 'rapido', label: 'Rápido', capacityUnits: 0.5, estimatedDays: 0.5, examples: 'Cambio de aceite, ajuste de cadena, cambio de guaya' },
-        { name: 'medio', label: 'Medio', capacityUnits: 1, estimatedDays: 1, examples: 'Cambio de pastillas, cambio de llanta, ajuste de válvulas' },
-        { name: 'complejo', label: 'Complejo', capacityUnits: 2, estimatedDays: 2, examples: 'Falla eléctrica, transmisión, mantenimiento general' },
-        { name: 'especial', label: 'Especial', capacityUnits: 3, estimatedDays: 3, examples: 'Restauración, pintura, motor completo' },
+        {
+          name: 'rapido',
+          label: 'Rápido',
+          capacityUnits: 0.5,
+          estimatedDays: 0.5,
+          examples: 'Cambio de aceite, ajuste de cadena, cambio de guaya',
+        },
+        {
+          name: 'medio',
+          label: 'Medio',
+          capacityUnits: 1,
+          estimatedDays: 1,
+          examples: 'Cambio de pastillas, cambio de llanta, ajuste de válvulas',
+        },
+        {
+          name: 'complejo',
+          label: 'Complejo',
+          capacityUnits: 2,
+          estimatedDays: 2,
+          examples: 'Falla eléctrica, transmisión, mantenimiento general',
+        },
+        {
+          name: 'especial',
+          label: 'Especial',
+          capacityUnits: 3,
+          estimatedDays: 3,
+          examples: 'Restauración, pintura, motor completo',
+        },
       ],
     },
     dailyCapacityUnits: {
