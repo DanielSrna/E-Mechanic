@@ -1,5 +1,36 @@
 import mongoose from 'mongoose';
 
+const serviceTypeSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    label: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    capacityUnits: {
+      type: Number,
+      required: true,
+      min: 0.5,
+    },
+    estimatedDays: {
+      type: Number,
+      required: true,
+      min: 0.5,
+    },
+    examples: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+  },
+  { _id: false }
+);
+
 const settingsSchema = new mongoose.Schema(
   {
     appName: {
@@ -50,6 +81,21 @@ const settingsSchema = new mongoose.Schema(
       type: String,
       default: 'contacto@emechanic.com',
       trim: true,
+    },
+    serviceTypes: {
+      type: [serviceTypeSchema],
+      default: [
+        { name: 'rapido', label: 'Rápido', capacityUnits: 0.5, estimatedDays: 0.5, examples: 'Cambio de aceite, ajuste de cadena, cambio de guaya' },
+        { name: 'medio', label: 'Medio', capacityUnits: 1, estimatedDays: 1, examples: 'Cambio de pastillas, cambio de llanta, ajuste de válvulas' },
+        { name: 'complejo', label: 'Complejo', capacityUnits: 2, estimatedDays: 2, examples: 'Falla eléctrica, transmisión, mantenimiento general' },
+        { name: 'especial', label: 'Especial', capacityUnits: 3, estimatedDays: 3, examples: 'Restauración, pintura, motor completo' },
+      ],
+    },
+    dailyCapacityUnits: {
+      type: Number,
+      default: 6,
+      min: 1,
+      max: 20,
     },
   },
   { timestamps: true }

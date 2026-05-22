@@ -149,6 +149,26 @@ const orderSchema = new mongoose.Schema(
       maxlength: 2000,
       default: null,
     },
+    serviceType: {
+      type: String,
+      enum: ['rapido', 'medio', 'complejo', 'especial'],
+      default: 'medio',
+    },
+    scheduledDate: {
+      type: Date,
+      default: null,
+    },
+    estimatedDays: {
+      type: Number,
+      min: 0.5,
+      max: 30,
+      default: 1,
+    },
+    priority: {
+      type: String,
+      enum: ['baja', 'normal', 'alta', 'urgente'],
+      default: 'normal',
+    },
     isClosed: {
       type: Boolean,
       default: false,

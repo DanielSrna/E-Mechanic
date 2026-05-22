@@ -20,6 +20,7 @@ const PartForm = lazy(() => import('./pages/Inventory/PartForm'));
 const SettingsPage = lazy(() => import('./pages/Settings/SettingsPage'));
 const MechanicList = lazy(() => import('./pages/Mechanics/MechanicList'));
 const MechanicForm = lazy(() => import('./pages/Mechanics/MechanicForm'));
+const SchedulePage = lazy(() => import('./pages/Schedule/SchedulePage'));
 
 function Spinner() {
   return (
@@ -48,6 +49,7 @@ export default function App() {
                 <Route path="/orders" element={<OrderList />} />
                 <Route path="/orders/new" element={<AdminRoute><OrderForm /></AdminRoute>} />
                 <Route path="/orders/:id" element={<OrderDetail />} />
+                <Route path="/schedule" element={<AdminRoute><SchedulePage /></AdminRoute>} />
                 <Route path="/inventory" element={<PartList />} />
                 <Route path="/inventory/new" element={<AdminRoute><PartForm /></AdminRoute>} />
                 <Route path="/inventory/:id/edit" element={<AdminRoute><PartForm /></AdminRoute>} />

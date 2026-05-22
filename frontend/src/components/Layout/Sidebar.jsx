@@ -11,6 +11,7 @@ import {
   Settings,
   Store,
   LogOut,
+  CalendarDays,
 } from 'lucide-react';
 
 const navItems = [
@@ -19,6 +20,7 @@ const navItems = [
   { to: '/motorcycles', label: 'Motocicletas', Icon: Gauge, adminOnly: false },
   { to: '/mechanics', label: 'Mecánicos', Icon: UserCog, adminOnly: true },
   { to: '/orders', label: 'Órdenes', Icon: Wrench, adminOnly: false },
+  { to: '/schedule', label: 'Agenda', Icon: CalendarDays, adminOnly: true },
   { to: '/inventory', label: 'Inventario', Icon: Package, adminOnly: false },
   { to: '/settings', label: 'Configuración', Icon: Settings, adminOnly: true },
 ];
