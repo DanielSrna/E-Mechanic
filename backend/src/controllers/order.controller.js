@@ -81,8 +81,13 @@ export const getOrders = async (req, res, next) => {
     const filter = {};
     const pager = paginate({}, { page: p, limit: l });
 
+    if (req.user.rol === 'mecanico') {
+      filter.mechanic = req.user._id;
+    } else if (mechanic) {
+      filter.mechanic = mechanic;
+    }
+
     if (status) filter.status = status;
-    if (mechanic) filter.mechanic = mechanic;
     if (motorcycle) filter.motorcycle = motorcycle;
     if (from || to) {
       filter.createdAt = {};

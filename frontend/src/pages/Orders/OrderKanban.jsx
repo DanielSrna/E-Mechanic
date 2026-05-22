@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { DragDropContext, Droppable } from '@hello-pangea/dnd';
 import toast from 'react-hot-toast';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import OrderCard from './OrderCard';
 import {
   KANBAN_COLUMNS,
@@ -51,7 +51,6 @@ export default function OrderKanban({ orders, onStatusChange }) {
     KANBAN_COLUMNS.forEach((col) => {
       const prevCount = prev.filter((o) => o.status === col.id).length;
       const nextCount = orders.filter((o) => o.status === col.id).length;
-
       if (prevCount === 0 && nextCount > 0) {
         nextCols[col.id] = false;
       }
@@ -107,7 +106,7 @@ export default function OrderKanban({ orders, onStatusChange }) {
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <div className="flex gap-3 overflow-x-auto pb-4 kanban-board">
+      <div className="flex items-start gap-2 overflow-x-auto pb-4 kanban-board">
         {KANBAN_COLUMNS.map((col) => (
           <KanbanColumn
             key={col.id}
@@ -136,31 +135,45 @@ function KanbanColumn({ column, isCollapsed, onToggle }) {
 
   if (empty && isCollapsed) {
     return (
-      <button
-        onClick={onToggle}
-        className={`flex-shrink-0 w-[260px] rounded-xl border ${borderColor} ${bgColor} ${headerBg} text-white px-3 py-2 flex items-center justify-between hover:opacity-90 transition`}
-      >
-        <div className="flex items-center gap-2">
-          <ChevronRight className="w-4 h-4" />
-          <span className="text-sm font-semibold">{label}</span>
-        </div>
-        <span className="text-xs bg-white/20 px-1.5 py-0.5 rounded-full">0</span>
-      </button>
+      <Droppable droppableId={id}>
+        {(provided, snapshot) => (
+          <div
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+            className={`flex-shrink-0 rounded-xl border ${borderColor} ${bgColor} transition-all duration-200 ${
+              snapshot.isDraggingOver ? 'ring-2 ring-blue-400' : ''
+            }`}
+          >
+            <button
+              onClick={onToggle}
+              className={`w-12 rounded-xl ${headerBg} text-white flex flex-col items-center gap-1 py-3 hover:opacity-90 transition`}
+              title={`Expandir ${label}`}
+            >
+              <ChevronRight className="w-4 h-4" />
+              <span
+                className="text-xs font-semibold"
+                style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
+              >
+                {label}
+              </span>
+              <span className="text-xs bg-white/20 px-1 py-0.5 rounded-full">0</span>
+            </button>
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
     );
   }
 
   return (
     <div
-      className={`flex-shrink-0 w-[260px] rounded-xl border ${borderColor} ${bgColor} flex flex-col max-h-[calc(100vh-220px)]`}
+      className={`flex-shrink-0 w-[260px] rounded-xl border ${borderColor} ${bgColor} flex flex-col max-h-[calc(100vh-220px)] transition-all duration-200`}
     >
       <button
         onClick={onToggle}
         className={`${headerBg} text-white px-3 py-2 rounded-t-xl flex items-center justify-between w-full text-left`}
       >
-        <div className="flex items-center gap-2">
-          <ChevronDown className="w-4 h-4" />
-          <span className="text-sm font-semibold">{label}</span>
-        </div>
+        <span className="text-sm font-semibold">{label}</span>
         <span className="text-xs bg-white/20 px-1.5 py-0.5 rounded-full">
           {orders.length}
         </span>
