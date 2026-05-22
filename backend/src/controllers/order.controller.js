@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import Order from '../models/order.model.js';
+import Order, { VALID_TRANSITIONS } from '../models/order.model.js';
 import Motorcycle from '../models/motorcycle.model.js';
 import Part from '../models/part.model.js';
 import logger from '../utils/logger.js';
@@ -149,6 +149,12 @@ export const updateOrderStatus = async (req, res, next) => {
       return res
         .status(400)
         .json({ message: 'Order is already in this status' });
+    }
+    const allowed = VALID_TRANSITIONS[currentStatus] || [];
+    if (!allowed.includes(status)) {
+      return res.status(400).json({
+        message: `Transición inválida: ${currentStatus} → ${status}. Permitidas: ${allowed.join(', ') || 'ninguna'}`,
+      });
     }
     order.status = status;
     if (diagnosis !== undefined) order.diagnosis = diagnosis;
