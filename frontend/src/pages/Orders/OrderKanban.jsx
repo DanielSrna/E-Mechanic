@@ -167,7 +167,7 @@ function KanbanColumn({ column, isCollapsed, onToggle }) {
 
   return (
     <div
-      className={`flex-shrink-0 w-[260px] rounded-xl border ${borderColor} ${bgColor} flex flex-col max-h-[calc(100vh-230px)] transition-all duration-200`}
+      className={`flex-shrink-0 w-[260px] rounded-xl border ${borderColor} ${bgColor} flex flex-col max-h-[calc(100vh-250px)] transition-all duration-200`}
     >
       <button
         onClick={onToggle}

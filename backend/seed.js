@@ -32,7 +32,10 @@ async function seed() {
   }
   if (force && existing > 0) {
     console.log('🔄 Force mode: eliminando datos existentes...');
-    await mongoose.connection.dropDatabase();
+    const collections = mongoose.connection.collections;
+    for (const key in collections) {
+      await collections[key].deleteMany({});
+    }
     console.log('✅ Base de datos limpiada');
   }
 

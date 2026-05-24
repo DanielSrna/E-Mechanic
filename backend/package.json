@@ -14,6 +14,7 @@
     "test:watch": "node --experimental-vm-modules node_modules/.bin/jest --watch",
     "test:integration": "node --experimental-vm-modules node_modules/.bin/jest --testPathPattern='__tests__/integration/'",
     "seed": "node seed.js",
+    "seed:force": "node seed.js --force",
     "setup": "node seed.js && echo '✅ Setup completo. npm run dev para arrancar'"
   },
   "keywords": [],
