@@ -22,11 +22,18 @@ async function seed() {
   await connectDB();
   console.log('✅ Conectado');
 
+  const force = process.argv.includes('--force');
   const existing = await User.countDocuments();
-  if (existing > 0) {
+  if (existing > 0 && !force) {
     console.log('⚠️  Ya existen usuarios. Saltando seed.');
+    console.log('   Usa --force para recargar: node seed.js --force');
     await mongoose.disconnect();
     process.exit(0);
+  }
+  if (force && existing > 0) {
+    console.log('🔄 Force mode: eliminando datos existentes...');
+    await mongoose.connection.dropDatabase();
+    console.log('✅ Base de datos limpiada');
   }
 
   console.log('\n👤 Creando admin...');

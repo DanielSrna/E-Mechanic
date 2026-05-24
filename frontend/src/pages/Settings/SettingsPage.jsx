@@ -2,13 +2,24 @@ import { useEffect, useState } from 'react';
 import api from '../../api/axios';
 import toast from 'react-hot-toast';
 import { useSettings } from '../../context/SettingsContext';
+import { useAuth } from '../../context/AuthContext';
 import { Store } from 'lucide-react';
 
 export default function SettingsPage() {
   const { settings, updateSettings } = useSettings();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [logoUpload, setLogoUpload] = useState(false);
+
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [newPasswordConf, setNewPasswordConf] = useState('');
+  const [changingPass, setChangingPass] = useState(false);
+
+  const [newEmail, setNewEmail] = useState('');
+  const [emailPassword, setEmailPassword] = useState('');
+  const [changingEmail, setChangingEmail] = useState(false);
 
   useEffect(() => {
     if (settings) setLoading(false);
@@ -35,6 +46,50 @@ export default function SettingsPage() {
       toast.success('Logo actualizado');
     } catch { toast.error('Error al subir logo'); }
     setLogoUpload(false);
+  };
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    if (newPassword !== newPasswordConf) {
+      toast.error('Las contraseñas no coinciden');
+      return;
+    }
+    if (newPassword.length < 6) {
+      toast.error('Mínimo 6 caracteres');
+      return;
+    }
+    setChangingPass(true);
+    try {
+      await api.put('/users/change-password', {
+        currentPassword,
+        newPassword,
+        newPasswordConfirmation: newPasswordConf,
+      });
+      toast.success('Contraseña actualizada');
+      setCurrentPassword('');
+      setNewPassword('');
+      setNewPasswordConf('');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Error');
+    }
+    setChangingPass(false);
+  };
+
+  const handleChangeEmail = async (e) => {
+    e.preventDefault();
+    setChangingEmail(true);
+    try {
+      const { data } = await api.put('/users/change-email', {
+        currentPassword: emailPassword,
+        newEmail,
+      });
+      toast.success(data.message || 'Email de verificación enviado');
+      setNewEmail('');
+      setEmailPassword('');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Error');
+    }
+    setChangingEmail(false);
   };
 
   if (loading) return <div className="text-center py-10 text-slate-400">Cargando...</div>;
@@ -92,6 +147,33 @@ export default function SettingsPage() {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
+        <h2 className="font-semibold text-slate-700 dark:text-slate-200">Credenciales del Administrador</h2>
+        <p className="text-xs text-slate-400">Sesión actual: {user?.email}</p>
+
+        <form onSubmit={handleChangeEmail} className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-700">
+          <h3 className="text-sm font-medium text-slate-600 dark:text-slate-300">Cambiar Email</h3>
+          <SettingsField label="Nuevo Email" value={newEmail} onChange={setNewEmail} placeholder="nuevo@email.com" />
+          <SettingsField label="Contraseña actual" value={emailPassword} onChange={setEmailPassword} placeholder="••••••" type="password" />
+          <p className="text-xs text-slate-400">Se enviará un email de verificación al nuevo correo.</p>
+          <button type="submit" disabled={changingEmail}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50">
+            {changingEmail ? 'Enviando...' : 'Cambiar Email'}
+          </button>
+        </form>
+
+        <form onSubmit={handleChangePassword} className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-700">
+          <h3 className="text-sm font-medium text-slate-600 dark:text-slate-300">Cambiar Contraseña</h3>
+          <SettingsField label="Contraseña actual" value={currentPassword} onChange={setCurrentPassword} placeholder="••••••" type="password" />
+          <SettingsField label="Nueva contraseña" value={newPassword} onChange={setNewPassword} placeholder="Mínimo 6 caracteres" type="password" />
+          <SettingsField label="Confirmar nueva contraseña" value={newPasswordConf} onChange={setNewPasswordConf} placeholder="Repite la contraseña" type="password" />
+          <button type="submit" disabled={changingPass}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50">
+            {changingPass ? 'Cambiando...' : 'Cambiar Contraseña'}
+          </button>
+        </form>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
         <h2 className="font-semibold text-slate-700">Datos del Taller (Facturas)</h2>
         <SettingsField label="Nombre de la Empresa" value={settings?.companyName} onChange={v => update('companyName', v)} />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -110,12 +192,12 @@ export default function SettingsPage() {
   );
 }
 
-function SettingsField({ label, value, onChange }) {
+function SettingsField({ label, value, onChange, type, placeholder }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-slate-600 mb-1">{label}</label>
-      <input type="text" value={value || ''} onChange={e => onChange(e.target.value)}
-        className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none" />
+      <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">{label}</label>
+      <input type={type || 'text'} value={value || ''} placeholder={placeholder} onChange={e => onChange(e.target.value)}
+        className="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 focus:ring-2 focus:ring-blue-500 outline-none" />
     </div>
   );
 }

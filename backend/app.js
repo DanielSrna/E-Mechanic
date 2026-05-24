@@ -28,6 +28,7 @@ import settingsRoutes from './src/routes/settings.routes.js';
 import exportRoutes from './src/routes/export.routes.js';
 import scheduleRoutes from './src/routes/schedule.routes.js';
 import webhookRoutes from './src/routes/webhook.routes.js';
+import notificationRoutes from './src/routes/notification.routes.js';
 
 // Middlewares
 app.use(express.json({ limit: '10mb' }));
@@ -114,6 +115,7 @@ app.use('/api/settings', settingsRoutes);
 app.use('/api/export', exportRoutes);
 app.use('/api/schedule', scheduleRoutes);
 app.use('/api/webhooks', webhookRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Manejador global de errores
 app.use((error, req, res, _next) => {
