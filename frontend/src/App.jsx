@@ -21,6 +21,7 @@ const SettingsPage = lazy(() => import('./pages/Settings/SettingsPage'));
 const MechanicList = lazy(() => import('./pages/Mechanics/MechanicList'));
 const MechanicForm = lazy(() => import('./pages/Mechanics/MechanicForm'));
 const SchedulePage = lazy(() => import('./pages/Schedule/SchedulePage'));
+const MotorcycleOrders = lazy(() => import('./pages/Motorcycles/MotorcycleOrders'));
 
 function Spinner() {
   return (
@@ -46,6 +47,7 @@ export default function App() {
                 <Route path="/motorcycles" element={<MotorcycleList />} />
                 <Route path="/motorcycles/new" element={<AdminRoute><MotorcycleForm /></AdminRoute>} />
                 <Route path="/motorcycles/:id/edit" element={<AdminRoute><MotorcycleForm /></AdminRoute>} />
+                <Route path="/motorcycles/:id/orders" element={<MotorcycleOrders />} />
                 <Route path="/orders" element={<OrderList />} />
                 <Route path="/orders/new" element={<AdminRoute><OrderForm /></AdminRoute>} />
                 <Route path="/orders/:id" element={<OrderDetail />} />

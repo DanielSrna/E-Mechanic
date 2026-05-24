@@ -135,3 +135,39 @@ export async function verifySMTPConnection() {
     return false;
   }
 }
+
+export async function sendVerificationEmail(to, userName, token) {
+  const transport = getTransporter();
+  if (!transport) {
+    logger.fracaso(
+      'SMTP no configurado. No se puede enviar email de verificación.'
+    );
+    return { success: false, reason: 'SMTP not configured' };
+  }
+
+  const verifyUrl = `${env.FRONTEND_URL || 'http://localhost:5173'}/verify-email?token=${token}`;
+
+  const html = `
+    <div style="max-width:600px;margin:0 auto;font-family:sans-serif">
+      <h1 style="color:#2563eb">E-Mechanic</h1>
+      <p>Hola <strong>${userName}</strong>,</p>
+      <p>Has solicitado cambiar tu correo electrónico. Haz clic en el botón de abajo para confirmar tu nuevo email:</p>
+      <a href="${verifyUrl}" style="display:inline-block;padding:12px 24px;background:#2563eb;color:#fff;text-decoration:none;border-radius:8px;font-weight:bold">Verificar Email</a>
+      <p style="margin-top:20px;color:#666;font-size:12px">Si no solicitaste este cambio, ignora este mensaje.</p>
+    </div>
+  `;
+
+  try {
+    const info = await transport.sendMail({
+      from: `"E-Mechanic" <${env.SMTP_USER}>`,
+      to,
+      subject: 'Verifica tu nuevo email — E-Mechanic',
+      html,
+    });
+    logger.exito('Email de verificación enviado a %s: %s', to, info.messageId);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    logger.fracaso('Error enviando verificación: %s', error.message);
+    return { success: false, reason: error.message };
+  }
+}

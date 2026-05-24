@@ -89,6 +89,13 @@ export const getOrders = async (req, res, next) => {
 
     if (status) filter.status = status;
     if (motorcycle) filter.motorcycle = motorcycle;
+
+    if (!req.query.all) {
+      const threeMonthsAgo = new Date();
+      threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+      filter.createdAt = { ...filter.createdAt, $gte: threeMonthsAgo };
+    }
+
     if (from || to) {
       filter.createdAt = {};
       if (from) filter.createdAt.$gte = new Date(from);
@@ -181,6 +188,13 @@ export const updateOrderStatus = async (req, res, next) => {
       .populate('motorcycle', 'plate brand model')
       .populate('mechanic', 'name');
     logger.exito('Estado actualizado: %s → %s', currentStatus, status);
+    eventEmitter.emit('order:statusChanged', {
+      orderId: order._id.toString(),
+      oldStatus: currentStatus,
+      newStatus: status,
+      motorcycle: populated.motorcycle?.plate,
+      client: order.client?.toString(),
+    });
     res.status(200).json({
       message: 'Order status updated successfully',
       order: populated,

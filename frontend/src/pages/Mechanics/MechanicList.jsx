@@ -44,6 +44,17 @@ export default function MechanicList() {
     }
   };
 
+  const handleRehire = async (mechanic) => {
+    if (!confirm(`¿Recontratar a ${mechanic.name}?`)) return;
+    try {
+      await api.put(`/users/${mechanic._id}/rehire`, {});
+      toast.success(`${mechanic.name} recontratado`);
+      fetch();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Error al recontratar');
+    }
+  };
+
   const handlePhotoUpload = async (e, mechanicId) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -140,6 +151,12 @@ export default function MechanicList() {
                   <div className="flex gap-2 mt-4 pt-3 border-t border-slate-100">
                     <Link to={`/mechanics/${m._id}/edit`} className="text-blue-600 text-xs hover:underline">Editar</Link>
                     <button onClick={() => handleFire(m)} className="text-red-500 text-xs hover:underline">Despedir</button>
+                  </div>
+                )}
+                {isAdmin && m.rol !== 'admin' && !m.isActive && (
+                  <div className="flex gap-2 mt-4 pt-3 border-t border-slate-100">
+                    <Link to={`/mechanics/${m._id}/edit`} className="text-blue-600 text-xs hover:underline">Editar</Link>
+                    <button onClick={() => handleRehire(m)} className="text-green-600 text-xs hover:underline font-medium">Recontratar</button>
                   </div>
                 )}
               </div>

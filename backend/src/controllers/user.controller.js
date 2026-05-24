@@ -1,9 +1,11 @@
 import jwt from 'jsonwebtoken';
+import { randomBytes } from 'node:crypto';
 import User from '../models/user.model.js';
 import JWT from '../models/jwt.model.js';
 import Order from '../models/order.model.js';
 import logger from '../utils/logger.js';
 import { generateAuthTokens } from '../services/jwt.service.js';
+import { sendVerificationEmail } from '../services/email.service.js';
 import { env } from '../config/env.config.js';
 
 const COOKIE_MAX_AGE = 7 * 24 * 60 * 60 * 1000;
@@ -345,6 +347,36 @@ export const fireMechanic = async (req, res, next) => {
   }
 };
 
+export const rehireMechanic = async (req, res, next) => {
+  logger.contexto('Iniciando controlador rehireMechanic');
+  try {
+    const { id } = req.params;
+    const mechanic = await User.findById(id);
+    if (!mechanic) return res.status(404).json({ message: 'User not found' });
+    if (mechanic.rol === 'admin')
+      return res.status(400).json({ message: 'Cannot rehire an admin' });
+    if (mechanic.isActive)
+      return res.status(400).json({ message: 'Mechanic is already active' });
+
+    mechanic.isActive = true;
+    await mechanic.save();
+    logger.exito('Mecánico recontratado: %s', mechanic.name);
+    res.status(200).json({
+      message: 'Mechanic reactivated',
+      user: {
+        _id: mechanic._id,
+        name: mechanic.name,
+        email: mechanic.email,
+        rol: mechanic.rol,
+        isActive: mechanic.isActive,
+      },
+    });
+  } catch (error) {
+    logger.fracaso('Error al recontratar: ', error);
+    next(error);
+  }
+};
+
 export const changePassword = async (req, res, next) => {
   logger.contexto('Iniciando controlador changePassword');
   try {
@@ -371,6 +403,96 @@ export const changePassword = async (req, res, next) => {
     res.status(200).json({ message: 'Password changed successfully' });
   } catch (error) {
     logger.fracaso('Error al cambiar contraseña: ', error);
+    next(error);
+  }
+};
+
+export const changeEmail = async (req, res, next) => {
+  logger.contexto('Iniciando controlador changeEmail');
+  try {
+    const { currentPassword, newEmail } = req.body;
+    if (!currentPassword || !newEmail) {
+      return res
+        .status(400)
+        .json({ message: 'Current password and new email are required' });
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    if (!emailRegex.test(newEmail)) {
+      return res.status(400).json({ message: 'Invalid email format' });
+    }
+
+    const existing = await User.findOne({ email: newEmail.toLowerCase() });
+    if (existing) {
+      return res.status(409).json({ message: 'Email is already in use' });
+    }
+
+    const user = await User.findById(req.user._id).select('+password');
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Current password is incorrect' });
+    }
+
+    const verifyToken = randomBytes(32).toString('hex');
+    await JWT.saveToken(
+      req.user._id,
+      verifyToken,
+      'verifyEmail',
+      'email-change',
+      24 * 60 * 60 * 1000
+    );
+
+    user.pendingEmail = newEmail;
+    await user.save();
+
+    if (env.SMTP_HOST && env.SMTP_USER && env.SMTP_PASS) {
+      await sendVerificationEmail(newEmail, req.user.name, verifyToken);
+    }
+
+    logger.exito(
+      'Solicitud de cambio de email: %s → %s',
+      req.user.email,
+      newEmail
+    );
+    res
+      .status(200)
+      .json({ message: 'Verification email sent. Check your inbox.' });
+  } catch (error) {
+    logger.fracaso('Error al cambiar email: ', error);
+    next(error);
+  }
+};
+
+export const verifyEmail = async (req, res, next) => {
+  logger.contexto('Iniciando controlador verifyEmail');
+  try {
+    const { token } = req.query;
+    if (!token) return res.status(400).json({ message: 'Token is required' });
+
+    const jwtRecord = await JWT.findOne({ token, type: 'verifyEmail' });
+    if (!jwtRecord) {
+      return res
+        .status(400)
+        .json({ message: 'Invalid or expired verification token' });
+    }
+
+    const user = await User.findById(jwtRecord.userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user.pendingEmail)
+      return res.status(400).json({ message: 'No pending email change' });
+
+    user.email = user.pendingEmail;
+    user.pendingEmail = undefined;
+    await user.save();
+
+    await JWT.deleteToken(jwtRecord.userId, 'email-change', 'verifyEmail');
+
+    logger.exito('Email verificado y actualizado: %s', user.email);
+    res
+      .status(200)
+      .json({ message: 'Email verified and updated successfully' });
+  } catch (error) {
+    logger.fracaso('Error al verificar email: ', error);
     next(error);
   }
 };

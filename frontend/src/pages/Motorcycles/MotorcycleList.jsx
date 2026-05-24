@@ -51,6 +51,7 @@ export default function MotorcycleList() {
             {m.client && <p className="text-sm text-slate-400 mt-1 flex items-center gap-1"><User className="w-3 h-3" /> {m.client.name}</p>}
             <div className="flex gap-3 mt-4 pt-3 border-t border-slate-100">
               <Link to={`/motorcycles/${m._id}/edit`} className="text-blue-600 text-xs font-medium hover:underline">Editar</Link>
+              <Link to={`/motorcycles/${m._id}/orders`} className="text-purple-600 text-xs font-medium hover:underline">Órdenes</Link>
               <Link to={`/orders/new?moto=${m._id}`} className="text-green-600 text-xs font-medium hover:underline">Crear OT</Link>
               {isAdmin && <button onClick={() => handleDelete(m._id, m.plate)} className="text-red-500 text-xs font-medium hover:underline">Eliminar</button>}
             </div>

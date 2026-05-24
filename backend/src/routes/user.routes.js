@@ -56,6 +56,7 @@ router
   );
 
 router.route('/change-password').put(userController.changePassword);
+router.route('/change-email').put(userController.changeEmail);
 
 router
   .route('/:id')
@@ -65,6 +66,10 @@ router
 router
   .route('/:id/fire')
   .put(requireRole('admin'), userController.fireMechanic);
+
+router
+  .route('/:id/rehire')
+  .put(requireRole('admin'), userController.rehireMechanic);
 
 router
   .route('/:id/photo')
@@ -85,5 +90,7 @@ router
       }
     }
   );
+
+router.route('/verify-email').get(userController.verifyEmail);
 
 export default router;

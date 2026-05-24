@@ -41,6 +41,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    pendingEmail: {
+      type: String,
+      default: null,
+    },
   },
   { timestamps: true }
 );

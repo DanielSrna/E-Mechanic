@@ -5,6 +5,7 @@ import app from './app.js';
 import { connectDB } from './src/config/db.config.js';
 import './src/events/listeners/order.listeners.js';
 import './src/events/listeners/stock.listeners.js';
+import './src/events/listeners/webhook.listeners.js';
 
 const PORT = env.PORT;
 
