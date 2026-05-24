@@ -32,6 +32,7 @@ const envSchema = z.object({
   SMTP_PORT: z.coerce.number().int().positive().optional(),
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
+  RESEND_API_KEY: z.string().optional(),
   GCS_PROJECT_ID: z.string().optional(),
   GCS_BUCKET_NAME: z.string().optional(),
   GCS_CLIENT_EMAIL: z.string().optional(),
