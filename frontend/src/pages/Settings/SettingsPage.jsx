@@ -130,23 +130,6 @@ export default function SettingsPage() {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
-        <h2 className="font-semibold text-slate-700">Apariencia</h2>
-        <label className="flex items-center justify-between cursor-pointer">
-          <span className="text-sm text-slate-600">Modo oscuro</span>
-          <input
-            type="checkbox"
-            className="w-5 h-5 rounded"
-            defaultChecked={localStorage.getItem('darkMode') === 'true'}
-            onChange={(e) => {
-              const isDark = e.target.checked;
-              localStorage.setItem('darkMode', String(isDark));
-              document.documentElement.classList.toggle('dark', isDark);
-            }}
-          />
-        </label>
-      </div>
-
-      <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
         <h2 className="font-semibold text-slate-700 dark:text-slate-200">Credenciales del Administrador</h2>
         <p className="text-xs text-slate-400">Sesión actual: {user?.email}</p>
 
@@ -208,7 +191,7 @@ function ColorField({ label, value, onChange }) {
       <label className="block text-sm font-medium text-slate-600 mb-1">{label}</label>
       <div className="flex gap-2">
         <input type="color" value={value || '#000000'} onChange={e => onChange(e.target.value)}
-          className="w-10 h-10 rounded border cursor-pointer" />
+          className="w-16 h-10 min-w-[4rem] rounded border cursor-pointer" />
         <input type="text" value={value || ''} onChange={e => onChange(e.target.value)}
           className="flex-1 px-3 py-2 rounded-lg border border-slate-300 text-sm font-mono outline-none" />
       </div>

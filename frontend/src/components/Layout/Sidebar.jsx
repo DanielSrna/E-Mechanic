@@ -2,17 +2,10 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useSettings } from '../../context/SettingsContext';
 import {
-  LayoutDashboard,
-  Users,
-  Gauge,
-  UserCog,
-  Wrench,
-  Package,
-  Settings,
-  Store,
-  LogOut,
-  CalendarDays,
+  LayoutDashboard, Users, Gauge, UserCog, Wrench,
+  Package, Settings, Store, LogOut, CalendarDays,
 } from 'lucide-react';
+import HelpButton from '../HelpButton';
 
 const navItems = [
   { to: '/', label: 'Dashboard', Icon: LayoutDashboard, adminOnly: true },
@@ -25,7 +18,7 @@ const navItems = [
   { to: '/settings', label: 'Configuración', Icon: Settings, adminOnly: true },
 ];
 
-export default function Sidebar({ open, onClose }) {
+export default function Sidebar({ open, onClose, onRepeatTour }) {
   const { user, logout, isAdmin } = useAuth();
   const location = useLocation();
   const { settings } = useSettings();
@@ -88,11 +81,14 @@ export default function Sidebar({ open, onClose }) {
         </div>
         <button
           onClick={logout}
-          className="w-full py-2.5 rounded-lg text-sm font-medium transition bg-red-500/20 hover:bg-red-500/40 text-red-300 hover:text-white flex items-center justify-center gap-2"
+          className="flex-[7] py-2.5 rounded-lg text-sm font-medium transition bg-red-500/20 hover:bg-red-500/40 text-red-300 hover:text-white flex items-center justify-center gap-2"
         >
           <LogOut className="w-4 h-4" />
           Cerrar sesión
         </button>
+        <div className="flex-[3]">
+          <HelpButton onRepeatTour={onRepeatTour} />
+        </div>
       </div>
     </aside>
   );

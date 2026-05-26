@@ -2,12 +2,15 @@ import { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useSettings } from '../../context/SettingsContext';
-import { Store, Bell } from 'lucide-react';
+import { Store, Bell, Sun, Moon } from 'lucide-react';
 import api from '../../api/axios';
 
 export default function Header({ onMenuClick }) {
   const { user } = useAuth();
   const { settings } = useSettings();
+  const [isDark, setIsDark] = useState(
+    () => localStorage.getItem('darkMode') === 'true'
+  );
   const [unread, setUnread] = useState(0);
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
@@ -149,6 +152,23 @@ export default function Header({ onMenuClick }) {
           </div>
         )}
       </div>
+
+      <button
+        onClick={() => {
+          const next = !isDark;
+          setIsDark(next);
+          localStorage.setItem('darkMode', String(next));
+          document.documentElement.classList.toggle('dark', next);
+        }}
+        className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+        title={isDark ? 'Modo claro' : 'Modo oscuro'}
+      >
+        {isDark ? (
+          <Sun className="w-5 h-5 text-amber-400" />
+        ) : (
+          <Moon className="w-5 h-5 text-slate-500" />
+        )}
+      </button>
 
       <span
         className="text-xs px-2 py-1 rounded-full font-medium"

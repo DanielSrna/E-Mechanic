@@ -21,7 +21,7 @@ export default function OrderCard({ order, index }) {
         >
           <div
             {...provided.dragHandleProps}
-            className="flex-shrink-0 w-7 bg-slate-100 dark:bg-slate-600 rounded-l-lg flex items-center justify-center cursor-grab active:cursor-grabbing border-r border-slate-200 dark:border-slate-500 hover:bg-slate-200 dark:hover:bg-slate-500 transition-colors"
+            className="flex-shrink-0 w-7 bg-slate-100 dark:bg-slate-600 rounded-l-lg flex items-center justify-center cursor-grab active:cursor-grabbing border-r border-slate-200 dark:border-slate-500 hover:bg-slate-200 dark:hover:bg-slate-500 transition-colors card-drag-handle"
             title="Arrastrar para mover"
           >
             <GripVertical className="w-4 h-4 text-slate-400 dark:text-slate-300" />

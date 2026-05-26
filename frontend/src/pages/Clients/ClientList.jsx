@@ -24,7 +24,7 @@ export default function ClientList() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 page-clients">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <h1 className="text-2xl font-bold text-slate-800">Clientes</h1>
         <Link to="/clients/new" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium text-center">

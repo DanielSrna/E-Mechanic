@@ -41,19 +41,19 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 page-dashboard">
       <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-200">Dashboard</h1>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard label="Clientes" value={overview?.totalClients} Icon={Users} color="blue" />
-        <StatCard label="Órdenes Totales" value={overview?.totalOrders} Icon={Wrench} color="green" />
-        <StatCard label="Pendientes" value={overview?.pendingOrders} Icon={Clock} color="amber" />
-        <StatCard label="Ingresos del Mes" value={formatCOP(overview?.revenueThisMonth)} Icon={DollarSign} color="purple" />
+        <StatCard label="Clientes" value={overview?.totalClients} Icon={Users} color="blue" className="stat-card-clients" />
+        <StatCard label="Órdenes Totales" value={overview?.totalOrders} Icon={Wrench} color="green" className="stat-card-orders" />
+        <StatCard label="Pendientes" value={overview?.pendingOrders} Icon={Clock} color="amber" className="stat-card-pending" />
+        <StatCard label="Ingresos del Mes" value={formatCOP(overview?.revenueThisMonth)} Icon={DollarSign} color="purple" className="stat-card-revenue" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200 mb-4">Ingresos Mensuales</h3>
+          <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200 mb-4 chart-header">Ingresos Mensuales</h3>
           {revenue && (
             <Line
               data={{
@@ -128,7 +128,7 @@ export default function Dashboard() {
   );
 }
 
-function StatCard({ label, value, Icon, color }) {
+function StatCard({ label, value, Icon, color, className }) {
   const colors = {
     blue: 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
     green: 'bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400',
@@ -136,7 +136,7 @@ function StatCard({ label, value, Icon, color }) {
     purple: 'bg-purple-50 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400',
   };
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+    <div className={`bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5 ${className || ''}`}>
       <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-3 ${colors[color]}`}>
         <Icon className="w-5 h-5" />
       </div>
