@@ -47,6 +47,7 @@ export default function Layout() {
   const [welcomeDone, setWelcomeDone] = useState(
     () => localStorage.getItem('tour-done-welcome') === 'true'
   );
+  const [navigateAfterTour, setNavigateAfterTour] = useState(null);
   const welcomeShown = useRef(false);
 
   const pageTour = useMemo(() => getTourKey(location.pathname), [location.pathname]);
@@ -55,6 +56,18 @@ export default function Layout() {
     const dark = localStorage.getItem('darkMode') === 'true';
     document.documentElement.classList.toggle('dark', dark);
   }, []);
+
+  useEffect(() => {
+    if (!navigateAfterTour) return;
+    const dest = navigateAfterTour;
+    setNavigateAfterTour(null);
+    navigate(dest);
+    setTimeout(() => {
+      setTourSteps(settingsSteps);
+      setTourKey('settings');
+      setTourRun(true);
+    }, 800);
+  }, [navigateAfterTour, navigate]);
 
   useEffect(() => {
     if (!user || loading) return;
@@ -85,12 +98,7 @@ export default function Layout() {
       localStorage.setItem('tour-done-welcome', 'true');
       setWelcomeDone(true);
       welcomeShown.current = false;
-      navigate('/settings');
-      setTimeout(() => {
-        setTourSteps(settingsSteps);
-        setTourKey('settings');
-        setTourRun(true);
-      }, 800);
+      setNavigateAfterTour('/settings');
       return;
     }
 

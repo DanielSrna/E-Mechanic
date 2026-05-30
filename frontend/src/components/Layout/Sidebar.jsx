@@ -79,7 +79,7 @@ export default function Sidebar({ open, onClose, onRepeatTour }) {
             <p className="text-white/50 text-xs truncate">{user?.rol}</p>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-1.5">
           <button
             onClick={logout}
             className="flex-[7] py-2.5 rounded-lg text-sm font-medium transition bg-red-500/20 hover:bg-red-500/40 text-red-300 hover:text-white flex items-center justify-center gap-2"
