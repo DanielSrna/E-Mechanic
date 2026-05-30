@@ -1,4 +1,4 @@
-import { Outlet, Navigate, useLocation } from 'react-router-dom';
+import { Outlet, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Sidebar from './Sidebar';
 import Header from './Header';
@@ -38,6 +38,7 @@ function getTourKey(path) {
 export default function Layout() {
   const { user, loading } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [tourSteps, setTourSteps] = useState([]);
   const [tourRun, setTourRun] = useState(false);
@@ -89,7 +90,7 @@ export default function Layout() {
       Object.keys(TOUR_MAP).forEach((k) => {
         localStorage.removeItem(`tour-done-${TOUR_MAP[k].key}`);
       });
-      window.location.href = '/settings';
+      setTimeout(() => navigate('/settings'), 0);
       return;
     }
 
