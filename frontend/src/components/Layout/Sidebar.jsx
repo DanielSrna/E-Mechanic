@@ -8,14 +8,14 @@ import {
 import HelpButton from '../HelpButton';
 
 const navItems = [
-  { to: '/', label: 'Dashboard', Icon: LayoutDashboard, adminOnly: true },
-  { to: '/clients', label: 'Clientes', Icon: Users, adminOnly: false },
-  { to: '/motorcycles', label: 'Motocicletas', Icon: Gauge, adminOnly: false },
-  { to: '/mechanics', label: 'Mecánicos', Icon: UserCog, adminOnly: true },
-  { to: '/orders', label: 'Órdenes', Icon: Wrench, adminOnly: false },
-  { to: '/schedule', label: 'Agenda', Icon: CalendarDays, adminOnly: true },
-  { to: '/inventory', label: 'Inventario', Icon: Package, adminOnly: false },
-  { to: '/settings', label: 'Configuración', Icon: Settings, adminOnly: true },
+  { to: '/', label: 'Dashboard', Icon: LayoutDashboard, adminOnly: true, cls: 'sidebar-dashboard' },
+  { to: '/clients', label: 'Clientes', Icon: Users, adminOnly: false, cls: 'sidebar-clients' },
+  { to: '/motorcycles', label: 'Motocicletas', Icon: Gauge, adminOnly: false, cls: 'sidebar-motorcycles' },
+  { to: '/mechanics', label: 'Mecánicos', Icon: UserCog, adminOnly: true, cls: 'sidebar-mechanics' },
+  { to: '/orders', label: 'Órdenes', Icon: Wrench, adminOnly: false, cls: 'sidebar-orders' },
+  { to: '/schedule', label: 'Agenda', Icon: CalendarDays, adminOnly: true, cls: 'sidebar-schedule' },
+  { to: '/inventory', label: 'Inventario', Icon: Package, adminOnly: false, cls: 'sidebar-inventory' },
+  { to: '/settings', label: 'Configuración', Icon: Settings, adminOnly: true, cls: 'sidebar-settings' },
 ];
 
 export default function Sidebar({ open, onClose, onRepeatTour }) {
@@ -53,7 +53,7 @@ export default function Sidebar({ open, onClose, onRepeatTour }) {
               key={item.to}
               to={item.to}
               onClick={onClose}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+              className={`${item.cls || ''} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
                 active
                   ? 'text-white'
                   : 'text-white/60 hover:text-white hover:bg-white/10'
@@ -79,15 +79,17 @@ export default function Sidebar({ open, onClose, onRepeatTour }) {
             <p className="text-white/50 text-xs truncate">{user?.rol}</p>
           </div>
         </div>
-        <button
-          onClick={logout}
-          className="flex-[7] py-2.5 rounded-lg text-sm font-medium transition bg-red-500/20 hover:bg-red-500/40 text-red-300 hover:text-white flex items-center justify-center gap-2"
-        >
-          <LogOut className="w-4 h-4" />
-          Cerrar sesión
-        </button>
-        <div className="flex-[3]">
-          <HelpButton onRepeatTour={onRepeatTour} />
+        <div className="flex gap-2">
+          <button
+            onClick={logout}
+            className="flex-[7] py-2.5 rounded-lg text-sm font-medium transition bg-red-500/20 hover:bg-red-500/40 text-red-300 hover:text-white flex items-center justify-center gap-2"
+          >
+            <LogOut className="w-4 h-4" />
+            Cerrar sesión
+          </button>
+          <div className="flex-[3]">
+            <HelpButton onRepeatTour={onRepeatTour} />
+          </div>
         </div>
       </div>
     </aside>
