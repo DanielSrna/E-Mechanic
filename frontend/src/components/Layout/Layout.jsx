@@ -84,12 +84,13 @@ export default function Layout() {
     if (tourKey === 'welcome') {
       localStorage.setItem('tour-done-welcome', 'true');
       setWelcomeDone(true);
+      welcomeShown.current = false;
       navigate('/settings');
       setTimeout(() => {
         setTourSteps(settingsSteps);
         setTourKey('settings');
         setTourRun(true);
-      }, 500);
+      }, 800);
       return;
     }
 
