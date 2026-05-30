@@ -1,4 +1,4 @@
-import { Outlet, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Sidebar from './Sidebar';
 import Header from './Header';
@@ -38,16 +38,14 @@ function getTourKey(path) {
 export default function Layout() {
   const { user, loading } = useAuth();
   const location = useLocation();
-  const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [tourSteps, setTourSteps] = useState([]);
   const [tourRun, setTourRun] = useState(false);
   const [tourKey, setTourKey] = useState(null);
   const [tourForce, setTourForce] = useState(false);
-  const [welcomeDone, setWelcomeDone] = useState(
+  const [welcomeDone] = useState(
     () => localStorage.getItem('tour-done-welcome') === 'true'
   );
-  const [navigateAfterTour, setNavigateAfterTour] = useState(null);
   const welcomeShown = useRef(false);
 
   const pageTour = useMemo(() => getTourKey(location.pathname), [location.pathname]);
@@ -56,18 +54,6 @@ export default function Layout() {
     const dark = localStorage.getItem('darkMode') === 'true';
     document.documentElement.classList.toggle('dark', dark);
   }, []);
-
-  useEffect(() => {
-    if (!navigateAfterTour) return;
-    const dest = navigateAfterTour;
-    setNavigateAfterTour(null);
-    navigate(dest);
-    setTimeout(() => {
-      setTourSteps(settingsSteps);
-      setTourKey('settings');
-      setTourRun(true);
-    }, 800);
-  }, [navigateAfterTour, navigate]);
 
   useEffect(() => {
     if (!user || loading) return;
@@ -96,9 +82,7 @@ export default function Layout() {
 
     if (tourKey === 'welcome') {
       localStorage.setItem('tour-done-welcome', 'true');
-      setWelcomeDone(true);
-      welcomeShown.current = false;
-      setNavigateAfterTour('/settings');
+      window.location.href = '/settings';
       return;
     }
 
@@ -106,7 +90,7 @@ export default function Layout() {
       localStorage.setItem(`tour-done-${tourKey}`, 'true');
     }
     setTourForce(false);
-  }, [tourKey, tourForce, navigate]);
+  }, [tourKey, tourForce]);
 
   const handleRepeatTour = useCallback(() => {
     const t = pageTour || getTourKey('/');
