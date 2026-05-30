@@ -44,7 +44,7 @@ export default function Layout() {
   const [tourRun, setTourRun] = useState(false);
   const [tourKey, setTourKey] = useState(null);
   const [tourForce, setTourForce] = useState(false);
-  const [welcomeDone] = useState(
+  const [welcomeDone, setWelcomeDone] = useState(
     () => localStorage.getItem('tour-done-welcome') === 'true'
   );
   const welcomeShown = useRef(false);
@@ -58,9 +58,9 @@ export default function Layout() {
 
   useEffect(() => {
     if (!user || loading) return;
-    if (welcomeShown.current) return;
 
     if (!welcomeDone) {
+      if (welcomeShown.current) return;
       welcomeShown.current = true;
       setTourSteps(welcomeSteps);
       setTourKey('welcome');
@@ -87,6 +87,7 @@ export default function Layout() {
 
     if (tourKey === 'welcome') {
       localStorage.setItem('tour-done-welcome', 'true');
+      setWelcomeDone(true);
       Object.keys(TOUR_MAP).forEach((k) => {
         localStorage.removeItem(`tour-done-${TOUR_MAP[k].key}`);
       });
