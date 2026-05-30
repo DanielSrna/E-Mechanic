@@ -70,9 +70,13 @@ export default function Layout() {
     if (pageTour) {
       const done = localStorage.getItem(`tour-done-${pageTour.key}`) === 'true';
       if (!done) {
-        setTourSteps(pageTour.steps);
-        setTourKey(pageTour.key);
-        setTourRun(true);
+        const key = pageTour.key;
+        const steps = pageTour.steps;
+        setTimeout(() => {
+          setTourSteps(steps);
+          setTourKey(key);
+          setTourRun(true);
+        }, 600);
       }
     }
   }, [user, loading, welcomeDone, pageTour]);
@@ -82,6 +86,9 @@ export default function Layout() {
 
     if (tourKey === 'welcome') {
       localStorage.setItem('tour-done-welcome', 'true');
+      Object.keys(TOUR_MAP).forEach((k) => {
+        localStorage.removeItem(`tour-done-${TOUR_MAP[k].key}`);
+      });
       window.location.href = '/settings';
       return;
     }
