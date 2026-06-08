@@ -22,18 +22,12 @@ export default [
     target: '.schedule-day',
     title: 'Día del Calendario',
     content:
-      'Cada celda muestra cuántas unidades están ocupadas de la capacidad total. Haz clic para ver el detalle de ese día.',
+      'Cada celda muestra cuántas unidades están ocupadas. Haz clic en un día para ver sus órdenes.',
   },
   {
-    target: '.schedule-day-detail',
-    title: 'Detalle del Día',
-    content:
-      'Aquí ves todas las órdenes programadas para este día: placa, cliente, tipo de servicio y prioridad.',
-  },
-  {
-    target: '.schedule-capacity-info',
-    title: 'Capacidad Diaria',
-    content:
-      'Capacidad configurada en unidades. Recuerda: Rápido=0.5u, Medio=1u, Complejo=2u, Especial=3u.',
+    target: '.sidebar-inventory',
+    title: '📦 Siguiente: Inventario',
+    content: 'Ahora haz clic en Inventario para gestionar tus repuestos y stock.',
+    placement: 'right',
   },
 ];

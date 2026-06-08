@@ -29,11 +29,11 @@ export default function PartList() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 page-inventory">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <h1 className="text-2xl font-bold text-slate-800">Inventario</h1>
         {isAdmin && (
-          <Link to="/inventory/new" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium text-center">
+          <Link to="/inventory/new" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium text-center btn-new-part">
             + Nuevo Repuesto
           </Link>
         )}
@@ -43,14 +43,14 @@ export default function PartList() {
         <input value={search} onChange={e => setSearch(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && fetch()}
           placeholder="Buscar por nombre, SKU o marca..."
-          className="flex-1 px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm" />
+          className="flex-1 px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm search-parts" />
         <button onClick={fetch} className="px-4 py-2 bg-slate-100 rounded-lg text-sm hover:bg-slate-200">Buscar</button>
-        <button onClick={() => { setLowStock(!lowStock); }} className={`px-4 py-2 rounded-lg text-sm font-medium ${lowStock ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-600'}`}>
+        <button onClick={() => { setLowStock(!lowStock); }} className={`px-4 py-2 rounded-lg text-sm font-medium toggle-low-stock ${lowStock ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-600'}`}>
           Stock bajo {lowStock ? '✓' : ''}
         </button>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto parts-table">
         <div className="bg-white rounded-xl shadow-sm min-w-[700px]">
           <table className="w-full text-sm">
             <thead className="bg-slate-50 text-slate-600">

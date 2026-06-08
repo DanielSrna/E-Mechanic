@@ -52,7 +52,7 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 chart-revenue">
           <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200 mb-4 chart-header">Ingresos Mensuales</h3>
           {revenue && (
             <Line
@@ -69,7 +69,7 @@ export default function Dashboard() {
           )}
         </div>
 
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 chart-mechanics">
           <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200 mb-4">Productividad por Mecánico</h3>
           {mechanics && (
             <Bar
@@ -98,7 +98,7 @@ export default function Dashboard() {
           )}
         </div>
 
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 chart-parts">
           <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200 mb-4">Repuestos Más Vendidos del Mes</h3>
           {mostUsedParts && mostUsedParts.parts?.length > 0 ? (
             <div className="space-y-3">

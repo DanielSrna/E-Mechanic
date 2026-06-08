@@ -1,11 +1,10 @@
-import { Outlet, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import AppTour from '../AppTour';
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 
-import welcomeSteps from '../tours/welcome.tour';
 import dashboardSteps from '../tours/dashboard.tour';
 import clientsSteps from '../tours/clients.tour';
 import motorcyclesSteps from '../tours/motorcycles.tour';
@@ -38,16 +37,11 @@ function getTourKey(path) {
 export default function Layout() {
   const { user, loading } = useAuth();
   const location = useLocation();
-  const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [tourSteps, setTourSteps] = useState([]);
   const [tourRun, setTourRun] = useState(false);
   const [tourKey, setTourKey] = useState(null);
   const [tourForce, setTourForce] = useState(false);
-  const [welcomeDone, setWelcomeDone] = useState(
-    () => localStorage.getItem('tour-done-welcome') === 'true'
-  );
-  const welcomeShown = useRef(false);
 
   const pageTour = useMemo(() => getTourKey(location.pathname), [location.pathname]);
 
@@ -57,45 +51,30 @@ export default function Layout() {
   }, []);
 
   useEffect(() => {
-    if (!user || loading) return;
+    if (!tourRun || !tourKey || !pageTour) return;
+    if (tourKey !== pageTour.key) {
+      localStorage.setItem(`tour-done-${tourKey}`, 'true');
+      setTourRun(false);
+    }
+  }, [pageTour?.key, tourKey, tourRun]);
 
-    if (!welcomeDone) {
-      if (welcomeShown.current) return;
-      welcomeShown.current = true;
-      setTourSteps(welcomeSteps);
-      setTourKey('welcome');
+  useEffect(() => {
+    if (!user || loading || tourRun || !pageTour) return;
+    const done = localStorage.getItem(`tour-done-${pageTour.key}`) === 'true';
+    if (done) return;
+    const key = pageTour.key;
+    const steps = pageTour.steps;
+    const timer = setTimeout(() => {
+      setTourSteps(steps);
+      setTourKey(key);
       setTourRun(true);
-      return;
-    }
-
-    if (pageTour) {
-      const done = localStorage.getItem(`tour-done-${pageTour.key}`) === 'true';
-      if (!done) {
-        const key = pageTour.key;
-        const steps = pageTour.steps;
-        setTimeout(() => {
-          setTourSteps(steps);
-          setTourKey(key);
-          setTourRun(true);
-        }, 600);
-      }
-    }
-  }, [user, loading, welcomeDone, pageTour]);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [user, loading, tourRun, pageTour?.key]);
 
   const handleTourFinish = useCallback(() => {
     setTourRun(false);
-
-    if (tourKey === 'welcome') {
-      localStorage.setItem('tour-done-welcome', 'true');
-      setWelcomeDone(true);
-      Object.keys(TOUR_MAP).forEach((k) => {
-        localStorage.removeItem(`tour-done-${TOUR_MAP[k].key}`);
-      });
-      setTimeout(() => navigate('/settings'), 0);
-      return;
-    }
-
-    if (tourKey && !tourForce) {
+    if (tourKey) {
       localStorage.setItem(`tour-done-${tourKey}`, 'true');
     }
     setTourForce(false);
@@ -105,10 +84,14 @@ export default function Layout() {
     const t = pageTour || getTourKey('/');
     if (t) {
       localStorage.removeItem(`tour-done-${t.key}`);
-      setTourSteps(t.steps);
-      setTourKey(t.key);
-      setTourForce(true);
-      setTourRun(true);
+      setTourRun(false);
+      setTourKey(null);
+      setTimeout(() => {
+        setTourSteps(t.steps);
+        setTourKey(t.key);
+        setTourForce(true);
+        setTourRun(true);
+      }, 100);
     }
   }, [pageTour]);
 

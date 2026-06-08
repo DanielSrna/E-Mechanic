@@ -35,4 +35,10 @@ export default [
     title: 'Formulario: Nombre',
     content: 'Al crear o editar, este es el campo del nombre del cliente. Se capitaliza automáticamente.',
   },
+  {
+    target: '.sidebar-motorcycles',
+    title: '🏍️ Siguiente: Motocicletas',
+    content: 'Ahora haz clic en Motocicletas para registrar las motos de tus clientes.',
+    placement: 'right',
+  },
 ];

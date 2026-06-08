@@ -43,8 +43,9 @@ export default [
   },
   {
     target: '.btn-repeat-tour',
-    title: 'Repetir Tutorial',
-    content: 'Si alguna vez necesitas volver a ver este tutorial, haz clic en el botón ? abajo a la izquierda.',
+    title: '🎉 ¡Felicidades!',
+    content:
+      'Has completado el recorrido por E-Mechanic. Si necesitas repetir algún tutorial, haz clic en el botón ? abajo a la izquierda.',
     placement: 'left',
   },
 ];

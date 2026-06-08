@@ -40,4 +40,10 @@ export default [
     content:
       'Reactiva a un mecánico que habías despedido. Vuelve a estar disponible para nuevas órdenes.',
   },
+  {
+    target: '.sidebar-orders',
+    title: '🔧 Siguiente: Órdenes',
+    content: 'Ahora haz clic en Órdenes para ver el tablero Kanban de trabajo.',
+    placement: 'right',
+  },
 ];

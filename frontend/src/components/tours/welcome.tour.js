@@ -84,10 +84,10 @@ export default [
     placement: 'center',
   },
   {
-    target: 'body',
-    title: '🚀 ¡Listo para empezar!',
+    target: '.sidebar-settings',
+    title: '🚀 ¡Empecemos!',
     content:
-      'Ahora te llevaré a la Configuración para que personalices tu taller con tu logo y colores. Después, exploraremos cada sección.',
-    placement: 'center',
+      'Haz clic en Configuración para personalizar tu taller con tu logo y colores. Luego te guiaré por cada sección.',
+    placement: 'right',
   },
 ];

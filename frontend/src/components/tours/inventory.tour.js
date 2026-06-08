@@ -27,14 +27,9 @@ export default [
       'SKU, nombre, marca, precio de venta y stock actual. Las filas con stock bajo se marcan en rojo.',
   },
   {
-    target: '.form-part-sku',
-    title: 'Formulario: SKU',
-    content: 'Código único del repuesto. Se convierte a mayúsculas. No puede repetirse.',
-  },
-  {
-    target: '.form-part-stock',
-    title: 'Stock y Stock Mínimo',
-    content:
-      'Define cuántas unidades tienes y el mínimo antes de recibir una alerta de stock bajo.',
+    target: '.sidebar-settings',
+    title: '⚙️ Siguiente: Configuración',
+    content: 'Ahora haz clic en Configuración para personalizar tu taller.',
+    placement: 'right',
   },
 ];

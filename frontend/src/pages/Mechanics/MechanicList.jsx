@@ -74,10 +74,10 @@ export default function MechanicList() {
   if (loading) return <div className="text-center py-10 text-slate-400">Cargando mecánicos...</div>;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 page-mechanics">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <h1 className="text-2xl font-bold text-slate-800">Mecánicos</h1>
-        <Link to="/mechanics/new" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium text-center">
+        <Link to="/mechanics/new" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium text-center btn-new-mechanic">
           + Nuevo Mecánico
         </Link>
       </div>
@@ -89,7 +89,7 @@ export default function MechanicList() {
         {mechanics.map((m) => {
           const s = stats[m._id] || {};
           return (
-            <div key={m._id} className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition">
+            <div key={m._id} className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition mechanic-card">
               <div className="h-24 bg-gradient-to-r from-blue-500 to-indigo-600 relative">
                 <div className="absolute -bottom-8 left-4">
                   <label className="cursor-pointer group" title="Cambiar foto">
@@ -119,7 +119,7 @@ export default function MechanicList() {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-slate-100">
+                <div className="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-slate-100 mechanic-stats">
                   <div className="text-center p-2 bg-blue-50 rounded-lg">
                     <p className="text-xl font-bold text-blue-700">{s.activeOrders ?? '-'}</p>
                     <p className="text-xs text-blue-500">Activas</p>
@@ -149,14 +149,14 @@ export default function MechanicList() {
 
                 {isAdmin && m.rol !== 'admin' && m.isActive && (
                   <div className="flex gap-2 mt-4 pt-3 border-t border-slate-100">
-                    <Link to={`/mechanics/${m._id}/edit`} className="text-blue-600 text-xs hover:underline">Editar</Link>
-                    <button onClick={() => handleFire(m)} className="text-red-500 text-xs hover:underline">Despedir</button>
+                    <Link to={`/mechanics/${m._id}/edit`} className="text-blue-600 text-xs hover:underline btn-edit-mechanic">Editar</Link>
+                    <button onClick={() => handleFire(m)} className="text-red-500 text-xs hover:underline btn-fire-mechanic">Despedir</button>
                   </div>
                 )}
                 {isAdmin && m.rol !== 'admin' && !m.isActive && (
                   <div className="flex gap-2 mt-4 pt-3 border-t border-slate-100">
-                    <Link to={`/mechanics/${m._id}/edit`} className="text-blue-600 text-xs hover:underline">Editar</Link>
-                    <button onClick={() => handleRehire(m)} className="text-green-600 text-xs hover:underline font-medium">Recontratar</button>
+                    <Link to={`/mechanics/${m._id}/edit`} className="text-blue-600 text-xs hover:underline btn-edit-mechanic">Editar</Link>
+                    <button onClick={() => handleRehire(m)} className="text-green-600 text-xs hover:underline font-medium btn-rehire-mechanic">Recontratar</button>
                   </div>
                 )}
               </div>

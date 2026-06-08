@@ -79,7 +79,7 @@ export default function SchedulePage() {
   const today = new Date().toISOString().split('T')[0];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 page-schedule">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
           <Calendar className="w-6 h-6" />
@@ -121,7 +121,7 @@ export default function SchedulePage() {
         )}
       </div>
 
-      <div className="flex items-center gap-4 text-xs text-slate-400">
+      <div className="flex items-center gap-4 text-xs text-slate-400 schedule-legend">
         <span className="flex items-center gap-1">🟢 &lt;60%</span>
         <span className="flex items-center gap-1">🟡 60-90%</span>
         <span className="flex items-center gap-1">🔴 &gt;90%</span>
@@ -157,7 +157,7 @@ export default function SchedulePage() {
                 <button
                   key={d.key}
                   onClick={() => setSelectedDay(isSelected ? null : d.date)}
-                  className={`h-24 border-b border-r border-slate-100 dark:border-slate-700 p-1.5 text-left transition hover:bg-blue-50 dark:hover:bg-blue-900/20 ${colorClass} ${isSelected ? 'ring-2 ring-blue-500' : ''}`}
+                  className={`h-24 border-b border-r border-slate-100 dark:border-slate-700 p-1.5 text-left transition hover:bg-blue-50 dark:hover:bg-blue-900/20 schedule-day ${colorClass} ${isSelected ? 'ring-2 ring-blue-500' : ''}`}
                 >
                   <div className="flex items-center justify-between">
                     <span
@@ -224,7 +224,7 @@ function DayDetail({ date, dayData, onClose }) {
   });
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5">
+    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-5 schedule-day-detail">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-slate-800 dark:text-slate-200 capitalize">
           {formattedDate}
@@ -237,7 +237,7 @@ function DayDetail({ date, dayData, onClose }) {
         </button>
       </div>
 
-      <div className="flex items-center gap-4 mb-4">
+      <div className="flex items-center gap-4 mb-4 schedule-capacity-info">
         <div className="text-sm text-slate-600 dark:text-slate-400">
           Capacidad: <span className="font-medium">{dayData.usedUnits ?? 0}/{dayData.maxUnits} unidades</span>
         </div>
@@ -260,7 +260,7 @@ function DayDetail({ date, dayData, onClose }) {
                 </span>
                 <span className="text-xs text-slate-400 ml-2">{o.client}</span>
               </div>
-              <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 schedule-nav">
                 <span className="text-xs text-slate-500 capitalize">{o.serviceType}</span>
                 <span className="text-xs bg-slate-200 dark:bg-slate-600 px-1.5 py-0.5 rounded">
                   {o.units}u

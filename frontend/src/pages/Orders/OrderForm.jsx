@@ -97,7 +97,7 @@ export default function OrderForm() {
           </select>
         </div>
 
-        <div>
+        <div className="form-service-type">
           <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Tipo de trabajo *</label>
           <div className="grid grid-cols-2 gap-2">
             {SERVICE_TYPES.map(st => (
@@ -121,7 +121,7 @@ export default function OrderForm() {
           )}
         </div>
 
-        <div>
+        <div className="form-priority">
           <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Prioridad</label>
           <div className="flex gap-2">
             {PRIORITIES.map(p => (
@@ -141,7 +141,7 @@ export default function OrderForm() {
           </div>
         </div>
 
-        <div>
+        <div className="form-scheduled-date">
           <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">Fecha programada *</label>
           <input
             type="date"

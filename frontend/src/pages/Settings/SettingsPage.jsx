@@ -95,10 +95,10 @@ export default function SettingsPage() {
   if (loading) return <div className="text-center py-10 text-slate-400">Cargando...</div>;
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="max-w-2xl mx-auto space-y-6 page-settings">
       <h1 className="text-2xl font-bold text-slate-800">Configuración del Sistema</h1>
 
-      <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
+      <div className="settings-logo bg-white rounded-xl shadow-sm p-6 space-y-4">
         <h2 className="font-semibold text-slate-700">Logo del Taller</h2>
         <div className="flex items-center gap-4">
           {settings?.logo ? (
@@ -115,12 +115,12 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
+      <div className="settings-name bg-white rounded-xl shadow-sm p-6 space-y-4">
         <h2 className="font-semibold text-slate-700">Identidad de la App</h2>
         <SettingsField label="Nombre de la App" value={settings?.appName} onChange={v => update('appName', v)} />
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
+      <div className="settings-colors bg-white rounded-xl shadow-sm p-6 space-y-4">
         <h2 className="font-semibold text-slate-700">Colores del Tema</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <ColorField label="Color Primario" value={settings?.primaryColor} onChange={v => update('primaryColor', v)} />
@@ -129,7 +129,7 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
+      <div className="settings-credentials bg-white rounded-xl shadow-sm p-6 space-y-4">
         <h2 className="font-semibold text-slate-700 dark:text-slate-200">Credenciales del Administrador</h2>
         <p className="text-xs text-slate-400">Sesión actual: {user?.email}</p>
 
@@ -156,7 +156,7 @@ export default function SettingsPage() {
         </form>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
+      <div className="settings-company bg-white rounded-xl shadow-sm p-6 space-y-4">
         <h2 className="font-semibold text-slate-700">Datos del Taller (Facturas)</h2>
         <SettingsField label="Nombre de la Empresa" value={settings?.companyName} onChange={v => update('companyName', v)} />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -168,7 +168,7 @@ export default function SettingsPage() {
       </div>
 
       <button onClick={handleSave} disabled={saving}
-        className="w-full py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 disabled:opacity-50 transition">
+        className="settings-save w-full py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 disabled:opacity-50 transition">
         {saving ? 'Guardando...' : 'Guardar Configuración'}
       </button>
     </div>
@@ -191,9 +191,9 @@ function ColorField({ label, value, onChange }) {
       <label className="block text-sm font-medium text-slate-600 mb-1">{label}</label>
       <div className="flex gap-2">
         <input type="color" value={value || '#000000'} onChange={e => onChange(e.target.value)}
-          className="w-16 h-10 min-w-[4rem] rounded border cursor-pointer" />
+          className="w-10 min-w-[2.5rem] h-10 rounded border cursor-pointer" />
         <input type="text" value={value || ''} onChange={e => onChange(e.target.value)}
-          className="flex-1 px-3 py-2 rounded-lg border border-slate-300 text-sm font-mono outline-none" />
+          className="flex-1 min-w-0 px-2 py-2 rounded-lg border border-slate-300 text-sm font-mono outline-none" />
       </div>
     </div>
   );

@@ -40,4 +40,10 @@ export default [
     title: 'Eliminar',
     content: 'Elimina esta moto. Solo funciona si no tiene órdenes de trabajo asociadas.',
   },
+  {
+    target: '.sidebar-mechanics',
+    title: '👨‍🔧 Siguiente: Mecánicos',
+    content: 'Ahora haz clic en Mecánicos para gestionar tu equipo de trabajo.',
+    placement: 'right',
+  },
 ];

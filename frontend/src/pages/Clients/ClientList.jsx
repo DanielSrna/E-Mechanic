@@ -27,7 +27,7 @@ export default function ClientList() {
     <div className="space-y-4 page-clients">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <h1 className="text-2xl font-bold text-slate-800">Clientes</h1>
-        <Link to="/clients/new" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium text-center">
+        <Link to="/clients/new" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium text-center btn-new-client">
           + Nuevo Cliente
         </Link>
       </div>
@@ -35,10 +35,10 @@ export default function ClientList() {
       <div className="flex gap-2">
         <input value={search} onChange={e => { setSearch(e.target.value); fetch(e.target.value); }}
           placeholder="Buscar por nombre, teléfono o email..."
-          className="flex-1 px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm" />
+          className="flex-1 px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm search-clients" />
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden clients-table">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-slate-50 text-slate-600">
@@ -59,8 +59,8 @@ export default function ClientList() {
                   <td className="px-6 py-3 text-slate-500 hidden lg:table-cell">{c.email || '-'}</td>
                   <td className="px-6 py-3 text-right">
                     <div className="flex justify-end gap-2">
-                      <Link to={`/clients/${c._id}/edit`} className="text-blue-600 hover:text-blue-800 text-xs font-medium">Editar</Link>
-                      {isAdmin && <button onClick={() => handleDelete(c._id, c.name)} className="text-red-500 hover:text-red-700 text-xs font-medium">Eliminar</button>}
+                      <Link to={`/clients/${c._id}/edit`} className="text-blue-600 hover:text-blue-800 text-xs font-medium btn-edit-client">Editar</Link>
+                      {isAdmin && <button onClick={() => handleDelete(c._id, c.name)} className="text-red-500 hover:text-red-700 text-xs font-medium btn-delete-client">Eliminar</button>}
                     </div>
                   </td>
                 </tr>

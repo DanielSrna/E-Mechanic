@@ -41,27 +41,9 @@ export default [
       'Este recuadro con puntitos es el agarre. Solo puedes arrastrar la tarjeta desde aquí. El resto de la tarjeta te lleva al detalle.',
   },
   {
-    target: '.form-service-type',
-    title: 'Tipo de Trabajo',
-    content:
-      'Selecciona el tipo: Rápido (0.5 unidades), Medio (1), Complejo (2) o Especial (3). Esto afecta la capacidad del taller.',
-  },
-  {
-    target: '.form-scheduled-date',
-    title: 'Fecha Programada',
-    content:
-      'Elige la fecha de ingreso. El sistema verifica automáticamente si hay capacidad ese día.',
-  },
-  {
-    target: '.form-priority',
-    title: 'Prioridad',
-    content:
-      'Normal, Alta, Urgente o Baja. Las urgentes se muestran con badge rojo en el Kanban.',
-  },
-  {
-    target: '.order-detail-status',
-    title: 'Panel de Estados',
-    content:
-      'Dentro del detalle de una orden, aquí puedes cambiar manualmente el estado o cerrar la orden.',
+    target: '.sidebar-schedule',
+    title: '📅 Siguiente: Agenda',
+    content: 'Ahora haz clic en Agenda para ver el calendario de capacidad del taller.',
+    placement: 'right',
   },
 ];

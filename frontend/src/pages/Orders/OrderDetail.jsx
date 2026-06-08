@@ -191,7 +191,7 @@ export default function OrderDetail() {
         )}
       </div>
 
-      <div className="w-full lg:w-56 shrink-0">
+      <div className="w-full lg:w-56 shrink-0 order-detail-status">
         <div className="bg-white rounded-xl shadow-sm p-4 lg:sticky lg:top-4">
           <h3 className="font-semibold text-slate-700 text-sm mb-3">Cambiar estado</h3>
           {canModify ? (
