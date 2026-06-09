@@ -201,7 +201,7 @@ describe('Orders API', () => {
         .set('Authorization', `Bearer ${adminToken}`)
         .send({ partId, quantity: 3 });
 
-      // Requiere replica set. En memoria puede fallar con 500 o OK con 200
+      // La transacción requiere replica set. En memory server puede fallar
       expect([200, 500]).toContain(res.status);
     });
 
@@ -210,7 +210,6 @@ describe('Orders API', () => {
         .put(`/api/orders/${orderId}/parts`)
         .set('Authorization', `Bearer ${adminToken}`)
         .send({ partId, quantity: 999 });
-      // Sin replica set = 500, con replica set = 400
       expect([400, 500]).toContain(res.status);
     });
 
