@@ -48,3 +48,12 @@ body {
 .dark .kanban-column-scroll:hover::-webkit-scrollbar-thumb { background: #475569; }
 
 .kanban-board { scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}

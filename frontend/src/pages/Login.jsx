@@ -24,7 +24,32 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100 px-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-100 px-4">
+      <div className="w-full max-w-md mb-6 animate-float">
+        <div className="bg-slate-900/90 backdrop-blur rounded-xl px-5 py-4 text-center shadow-lg">
+          <p className="text-white/60 text-xs font-medium mb-2 tracking-wide">
+            BIENVENIDO RECLUTADOR
+          </p>
+          <p className="text-white/80 text-sm leading-relaxed">
+            Usa estas credenciales para probar la aplicación:
+          </p>
+          <div className="mt-2 space-y-1">
+            <p className="text-xs text-white/50">
+              Admin:{' '}
+              <span className="text-white font-mono">admin@emechanic.com</span>
+              <span className="text-white/30 mx-1">/</span>
+              <span className="text-white font-mono">admin123</span>
+            </p>
+            <p className="text-xs text-white/50">
+              Mecánico:{' '}
+              <span className="text-white font-mono">carlos@emechanic.com</span>
+              <span className="text-white/30 mx-1">/</span>
+              <span className="text-white font-mono">mecanico123</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-slate-800">E-Mechanic</h1>
