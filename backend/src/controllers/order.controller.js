@@ -5,8 +5,15 @@ import Part from '../models/part.model.js';
 import logger from '../utils/logger.js';
 import eventEmitter from '../events/eventEmitter.js';
 import { paginate, paginatedResponse } from '../utils/pagination.js';
+import { env } from '../config/env.config.js';
 
-const TAX_RATE = 0.19;
+function assertOrderOpen(order) {
+  if (order.isClosed) {
+    const err = new Error('Cannot modify a closed work order');
+    err.status = 400;
+    throw err;
+  }
+}
 
 export const createOrder = async (req, res, next) => {
   logger.contexto('Iniciando controlador createOrder');
@@ -164,11 +171,7 @@ export const updateOrderStatus = async (req, res, next) => {
     if (!order) {
       return res.status(404).json({ message: 'Work order not found' });
     }
-    if (order.isClosed) {
-      return res
-        .status(400)
-        .json({ message: 'Cannot modify a closed work order' });
-    }
+    assertOrderOpen(order);
     const currentStatus = order.status;
     if (currentStatus === status) {
       return res
@@ -224,9 +227,7 @@ export const addPartToOrder = async (req, res, next) => {
 
     if (order.isClosed) {
       await session.abortTransaction();
-      return res
-        .status(400)
-        .json({ message: 'Cannot modify a closed work order' });
+      assertOrderOpen(order);
     }
 
     const part = await Part.findById(partId).session(session);
@@ -320,9 +321,7 @@ export const removePartFromOrder = async (req, res, next) => {
 
     if (order.isClosed) {
       await session.abortTransaction();
-      return res
-        .status(400)
-        .json({ message: 'Cannot modify a closed work order' });
+      assertOrderOpen(order);
     }
 
     const partIndex = order.partsUsed.findIndex(
@@ -383,11 +382,7 @@ export const addLaborToOrder = async (req, res, next) => {
       return res.status(404).json({ message: 'Work order not found' });
     }
 
-    if (order.isClosed) {
-      return res
-        .status(400)
-        .json({ message: 'Cannot modify a closed work order' });
-    }
+    assertOrderOpen(order);
 
     order.labor.push({ description, cost });
     await order.save();
@@ -425,11 +420,7 @@ export const removeLaborFromOrder = async (req, res, next) => {
       return res.status(404).json({ message: 'Work order not found' });
     }
 
-    if (order.isClosed) {
-      return res
-        .status(400)
-        .json({ message: 'Cannot modify a closed work order' });
-    }
+    assertOrderOpen(order);
 
     if (index < 0 || index >= order.labor.length) {
       return res.status(400).json({
@@ -460,10 +451,7 @@ export const addFindingToOrder = async (req, res, next) => {
     const order = await Order.findById(id);
     if (!order)
       return res.status(404).json({ message: 'Work order not found' });
-    if (order.isClosed)
-      return res
-        .status(400)
-        .json({ message: 'Cannot modify a closed work order' });
+    assertOrderOpen(order);
 
     order.findings.push({ title, description });
     await order.save();
@@ -483,10 +471,7 @@ export const removeFindingFromOrder = async (req, res, next) => {
     const order = await Order.findById(id);
     if (!order)
       return res.status(404).json({ message: 'Work order not found' });
-    if (order.isClosed)
-      return res
-        .status(400)
-        .json({ message: 'Cannot modify a closed work order' });
+    assertOrderOpen(order);
     if (index < 0 || index >= order.findings.length) {
       return res.status(400).json({
         message: `Invalid finding index. Valid: 0-${order.findings.length - 1}`,
@@ -529,7 +514,7 @@ export const closeOrder = async (req, res, next) => {
       0
     );
     const subtotalLabor = order.labor.reduce((sum, l) => sum + l.cost, 0);
-    const tax = Math.round((subtotalParts + subtotalLabor) * TAX_RATE);
+    const tax = Math.round((subtotalParts + subtotalLabor) * env.TAX_RATE);
     const total = subtotalParts + subtotalLabor + tax;
 
     order.subtotalParts = subtotalParts;

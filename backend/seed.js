@@ -5,6 +5,7 @@ import Motorcycle from './src/models/motorcycle.model.js';
 import Part from './src/models/part.model.js';
 import Order from './src/models/order.model.js';
 import Settings from './src/models/settings.model.js';
+import { env } from './src/config/env.config.js';
 import mongoose from 'mongoose';
 
 async function randomBetween(min, max) {
@@ -130,7 +131,7 @@ async function seed() {
         closedAt: new Date(args.createdAt.getTime() + (args.days || 1) * 86400000),
         subtotalParts: extra?.subtotalParts || 0,
         subtotalLabor: extra?.subtotalLabor || 0,
-        tax: Math.round(((extra?.subtotalParts || 0) + (extra?.subtotalLabor || 0)) * 0.19),
+        tax: Math.round(((extra?.subtotalParts || 0) + (extra?.subtotalLabor || 0)) * env.TAX_RATE),
         total: Math.round(((extra?.subtotalParts || 0) + (extra?.subtotalLabor || 0)) * 1.19),
         partsUsed: extra?.partsUsed || [],
         labor: extra?.labor || [],
