@@ -6,6 +6,8 @@ const api = axios.create({
 });
 
 let accessToken = null;
+let isRefreshing = false;
+let refreshPromise = null;
 
 export const setToken = (token) => { accessToken = token; };
 export const getToken = () => accessToken;
@@ -33,11 +35,22 @@ api.interceptors.response.use(
   async (error) => {
     const original = error.config;
     if (error.response?.status === 401 && !original._retry) {
+      if (isRefreshing) {
+        try {
+          await refreshPromise;
+          original.headers.Authorization = `Bearer ${accessToken}`;
+          return api(original);
+        } catch {
+          return Promise.reject(error);
+        }
+      }
+
       original._retry = true;
+      isRefreshing = true;
+      refreshPromise = axios.post('/api/users/refresh-token', {}, { withCredentials: true });
+
       try {
-        const { data } = await axios.post('/api/users/refresh-token', {}, {
-          withCredentials: true,
-        });
+        const { data } = await refreshPromise;
         accessToken = data.accessToken;
         updateStoredToken(data.accessToken);
         original.headers.Authorization = `Bearer ${accessToken}`;
@@ -48,6 +61,10 @@ api.interceptors.response.use(
         if (window.location.pathname !== '/login') {
           window.location.href = '/login';
         }
+        return Promise.reject(error);
+      } finally {
+        isRefreshing = false;
+        refreshPromise = null;
       }
     }
     return Promise.reject(error);

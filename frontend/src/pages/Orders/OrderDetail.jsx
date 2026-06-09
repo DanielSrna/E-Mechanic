@@ -3,18 +3,7 @@ import { useParams } from 'react-router-dom';
 import api from '../../api/axios';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
-
-const ALL_STATUSES = ['ingresada', 'en_revision', 'esperando_aprobacion', 'esperando_repuestos', 'en_reparacion', 'lista_entrega', 'entregada', 'cancelada'];
-
-const statusLabel = (s) => s?.replace(/_/g, ' ');
-const statusColor = (s) => {
-  const m = {
-    ingresada: 'bg-slate-500', en_revision: 'bg-yellow-500', esperando_aprobacion: 'bg-orange-500',
-    esperando_repuestos: 'bg-purple-500', en_reparacion: 'bg-blue-500',
-    lista_entrega: 'bg-green-500', entregada: 'bg-emerald-500', cancelada: 'bg-red-500',
-  };
-  return m[s] || 'bg-slate-500';
-};
+import { ALL_STATUSES, statusLabel, statusColor } from './status.js';
 
 export default function OrderDetail() {
   const { id } = useParams();

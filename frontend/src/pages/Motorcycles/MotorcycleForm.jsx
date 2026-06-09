@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../../api/axios';
+import Field from '../../components/ui/Field';
 import toast from 'react-hot-toast';
 
 export default function MotorcycleForm() {
@@ -101,17 +102,6 @@ export default function MotorcycleForm() {
           </div>
         </div>
       )}
-    </div>
-  );
-}
-
-function Field({ label, type = 'text', value, onChange, placeholder }) {
-  return (
-    <div>
-      <label className="block text-sm font-medium text-slate-600 mb-1">{label}</label>
-      <input type={type} value={value} onChange={e => onChange(e.target.value)}
-        className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none"
-        placeholder={placeholder} />
     </div>
   );
 }

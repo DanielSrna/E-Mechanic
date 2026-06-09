@@ -6,6 +6,7 @@ import Layout from './components/Layout/Layout';
 import AdminRoute from './components/Layout/AdminRoute';
 import Login from './pages/Login';
 import NotFound from './pages/NotFound';
+import ErrorBoundary from './components/ErrorBoundary';
 
 const Dashboard = lazy(() => import('./pages/Dashboard/Dashboard'));
 const ClientList = lazy(() => import('./pages/Clients/ClientList'));
@@ -37,6 +38,7 @@ export default function App() {
       <AuthProvider>
         <SettingsProvider>
           <Suspense fallback={<Spinner />}>
+            <ErrorBoundary>
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route element={<Layout />}>
@@ -62,6 +64,7 @@ export default function App() {
                 <Route path="*" element={<NotFound />} />
               </Route>
             </Routes>
+            </ErrorBoundary>
           </Suspense>
         </SettingsProvider>
       </AuthProvider>
