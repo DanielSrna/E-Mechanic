@@ -6,6 +6,7 @@ import {
   Package, Settings, Store, LogOut, CalendarDays,
 } from 'lucide-react';
 import HelpButton from '../HelpButton';
+import AssistButton from '../AssistButton';
 
 const navItems = [
   { to: '/', label: 'Dashboard', Icon: LayoutDashboard, adminOnly: true, cls: 'sidebar-dashboard' },
@@ -88,7 +89,11 @@ export default function Sidebar({ open, onClose, onRepeatTour }) {
             Cerrar sesión
           </button>
           <div className="flex-[3]">
-            <HelpButton onRepeatTour={onRepeatTour} />
+            {isAdmin ? (
+              <HelpButton onRepeatTour={onRepeatTour} />
+            ) : (
+              <AssistButton />
+            )}
           </div>
         </div>
       </div>

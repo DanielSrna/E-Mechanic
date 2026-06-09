@@ -8,7 +8,7 @@ const notificationSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
-    type: {
+      type: {
       type: String,
       enum: [
         'order_status',
@@ -16,6 +16,7 @@ const notificationSchema = new mongoose.Schema(
         'invoice',
         'order_closed',
         'mechanic_assigned',
+        'assistance_request',
       ],
       required: true,
     },

@@ -35,7 +35,7 @@ function getTourKey(path) {
 }
 
 export default function Layout() {
-  const { user, loading } = useAuth();
+  const { user, loading, isAdmin } = useAuth();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [tourSteps, setTourSteps] = useState([]);
@@ -59,7 +59,7 @@ export default function Layout() {
   }, [pageTour?.key, tourKey, tourRun]);
 
   useEffect(() => {
-    if (!user || loading || tourRun || !pageTour) return;
+    if (!user || loading || tourRun || !pageTour || !isAdmin) return;
     const done = localStorage.getItem(`tour-done-${pageTour.key}`) === 'true';
     if (done) return;
     const key = pageTour.key;
@@ -120,6 +120,7 @@ export default function Layout() {
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         onRepeatTour={handleRepeatTour}
+        isAdmin={isAdmin}
       />
       <div className="flex-1 flex flex-col min-w-0 lg:ml-64">
         <Header onMenuClick={() => setSidebarOpen(true)} />
