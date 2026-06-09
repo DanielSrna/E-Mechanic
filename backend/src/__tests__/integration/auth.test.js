@@ -36,8 +36,8 @@ describe('Auth API', () => {
           name: 'Test User',
           email: 'test@test.com',
           cedula: '1234567890',
-          password: 'test123',
-          passwordConfirmation: 'test123',
+          password: 'test1234',
+          passwordConfirmation: 'test1234',
         });
       expect(res.status).toBe(201);
       expect(res.body.user.email).toBe('test@test.com');
@@ -52,8 +52,8 @@ describe('Auth API', () => {
           name: 'juan perez',
           email: 'juan@test.com',
           cedula: '1234567891',
-          password: 'test123',
-          passwordConfirmation: 'test123',
+          password: 'test1234',
+          passwordConfirmation: 'test1234',
         });
       expect(res.body.user.name).toBe('Juan Perez');
     });
@@ -66,8 +66,8 @@ describe('Auth API', () => {
           name: 'First',
           email: 'dup@test.com',
           cedula: '1111111111',
-          password: 'test123',
-          passwordConfirmation: 'test123',
+          password: 'test1234',
+          passwordConfirmation: 'test1234',
         });
       const res = await request(app)
         .post('/api/users')
@@ -76,8 +76,8 @@ describe('Auth API', () => {
           name: 'Second',
           email: 'dup@test.com',
           cedula: '2222222222',
-          password: 'test123',
-          passwordConfirmation: 'test123',
+          password: 'test1234',
+          passwordConfirmation: 'test1234',
         });
       expect(res.status).toBe(400);
     });
@@ -90,8 +90,8 @@ describe('Auth API', () => {
           name: 'Third',
           email: 'third@test.com',
           cedula: '1111111111',
-          password: 'test123',
-          passwordConfirmation: 'test123',
+          password: 'test1234',
+          passwordConfirmation: 'test1234',
         });
       expect(res.status).toBe(400);
     });
@@ -104,7 +104,7 @@ describe('Auth API', () => {
           name: 'Test',
           email: 'pwd@test.com',
           cedula: '3333333333',
-          password: 'test123',
+          password: 'test1234',
           passwordConfirmation: 'different',
         });
       expect(res.status).toBe(400);
@@ -117,7 +117,7 @@ describe('Auth API', () => {
         name: 'Login Test',
         email: 'login@test.com',
         cedula: '4444444444',
-        password: 'test123',
+        password: 'test1234',
         rol: 'mecanico',
       });
     });
@@ -125,7 +125,7 @@ describe('Auth API', () => {
     it('login exitoso retorna accessToken', async () => {
       const res = await request(app)
         .post('/api/users/login')
-        .send({ email: 'login@test.com', password: 'test123' });
+        .send({ email: 'login@test.com', password: 'test1234' });
       expect(res.status).toBe(200);
       expect(res.body.accessToken).toBeDefined();
     });
@@ -140,14 +140,14 @@ describe('Auth API', () => {
     it('login falla con usuario inexistente', async () => {
       const res = await request(app)
         .post('/api/users/login')
-        .send({ email: 'noexiste@test.com', password: 'test123' });
+        .send({ email: 'noexiste@test.com', password: 'test1234' });
       expect(res.status).toBe(401);
     });
 
     it('setea cookie httpOnly con refreshToken', async () => {
       const res = await request(app)
         .post('/api/users/login')
-        .send({ email: 'login@test.com', password: 'test123' });
+        .send({ email: 'login@test.com', password: 'test1234' });
       const cookies = res.headers['set-cookie'];
       expect(cookies).toBeDefined();
       expect(cookies[0]).toContain('HttpOnly');
@@ -162,12 +162,12 @@ describe('Auth API', () => {
         name: 'Me Test',
         email: 'me@test.com',
         cedula: '5555555555',
-        password: 'test123',
+        password: 'test1234',
         rol: 'mecanico',
       });
       const login = await request(app)
         .post('/api/users/login')
-        .send({ email: 'me@test.com', password: 'test123' });
+        .send({ email: 'me@test.com', password: 'test1234' });
       token = login.body.accessToken;
     });
 
@@ -196,14 +196,14 @@ describe('Auth API', () => {
           name: 'Flow Test',
           email: 'flow@test.com',
           cedula: '6666666666',
-          password: 'test123',
-          passwordConfirmation: 'test123',
+          password: 'test1234',
+          passwordConfirmation: 'test1234',
         });
 
       // Login as the new user
       const login = await request(app)
         .post('/api/users/login')
-        .send({ email: 'flow@test.com', password: 'test123' });
+        .send({ email: 'flow@test.com', password: 'test1234' });
       expect(login.status).toBe(200);
       const token = login.body.accessToken;
       const cookie = login.headers['set-cookie'];
@@ -244,8 +244,8 @@ describe('Auth API', () => {
           name: 'Fire Me',
           email: 'fire@test.com',
           cedula: '7777777777',
-          password: 'test123',
-          passwordConfirmation: 'test123',
+          password: 'test1234',
+          passwordConfirmation: 'test1234',
         });
       const userId = body.user._id;
 

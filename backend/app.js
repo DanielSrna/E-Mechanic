@@ -60,23 +60,36 @@ app.use(
 );
 app.use(cookieParser());
 
-function sanitizeQuery(req, res, next) {
-  if (req.query) {
-    const sanitize = (obj) => {
-      for (const key in obj) {
-        if (typeof obj[key] === 'string' && (obj[key].startsWith('$') || obj[key].includes('.') && !obj[key].includes('@'))) {
-          delete obj[key];
-        } else if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
-          sanitize(obj[key]);
-        }
+function sanitizeInput(obj) {
+  if (!obj || typeof obj !== 'object') return;
+  for (const key in obj) {
+    if (key.startsWith('$')) {
+      delete obj[key];
+      continue;
+    }
+    const val = obj[key];
+    if (typeof val === 'string') {
+      if (
+        val.startsWith('$') ||
+        (val.includes('.') && !val.includes('@') && !val.startsWith('http'))
+      ) {
+        delete obj[key];
       }
-    };
-    sanitize(req.query);
+    } else if (typeof val === 'object' && val !== null && !Array.isArray(val)) {
+      sanitizeInput(val);
+      if (Object.keys(val).length === 0) delete obj[key];
+    }
   }
+}
+
+function sanitizeRequest(req, res, next) {
+  if (req.query) sanitizeInput(req.query);
+  if (req.body) sanitizeInput(req.body);
   next();
 }
 
 app.use(compression());
+app.use(sanitizeRequest);
 app.use((req, res, next) => {
   res.setTimeout(30000, () => {
     res.status(408).json({ message: 'Request timeout' });

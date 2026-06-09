@@ -21,6 +21,18 @@ const envSchema = z.object({
         message:
           'FRONTEND_URL debe ser una URL válida o múltiples separadas por coma',
       }
+    )
+    .refine(
+      (val) => {
+        if (process.env.NODE_ENV === 'production') {
+          return !val.includes('localhost') && !val.includes('127.0.0.1');
+        }
+        return true;
+      },
+      {
+        message:
+          'FRONTEND_URL no puede ser localhost en producción. Configura la URL real de tu frontend.',
+      }
     ),
   JWT_SECRET: z.string().min(10),
   JWT_SECRET_EXPIRES_IN: z.string().default('1d'),

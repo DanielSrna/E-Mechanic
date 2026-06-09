@@ -9,6 +9,7 @@ import { authLimiter } from '../middlewares/rateLimiter.middleware.js';
 import {
   registerValidator,
   loginValidator,
+  updateMechanicValidator,
 } from '../validators/user.validators.js';
 
 /**
@@ -63,7 +64,7 @@ router.route('/change-email').put(userController.changeEmail);
 router
   .route('/:id')
   .get(requireRole('admin'), userController.getMechanicById)
-  .put(requireRole('admin'), userController.updateMechanic);
+  .put(requireRole('admin'), updateMechanicValidator, validate, userController.updateMechanic);
 
 router
   .route('/:id/fire')

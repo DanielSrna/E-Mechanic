@@ -62,7 +62,7 @@ describe('Change Email API', () => {
     it('rechaza email duplicado', async () => {
       await User.create({
         name: 'Existing', email: 'exists@test.com', cedula: '9900000002',
-        password: 'test123', rol: 'mecanico',
+        password: 'test1234', rol: 'mecanico',
       });
       const res = await request(app)
         .put('/api/users/change-email')

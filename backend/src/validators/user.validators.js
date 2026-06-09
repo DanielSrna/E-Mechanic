@@ -40,8 +40,8 @@ export const registerValidator = [
   body('password')
     .notEmpty()
     .withMessage('Password is required')
-    .isLength({ min: 6 })
-    .withMessage('Password must be at least 6 characters long'),
+    .isLength({ min: 8 })
+    .withMessage('Password must be at least 8 characters long'),
   body('passwordConfirmation')
     .trim()
     .notEmpty()
@@ -63,4 +63,40 @@ export const loginValidator = [
     .withMessage('Invalid email format')
     .normalizeEmail(),
   body('password').trim().notEmpty().withMessage('Password is required'),
+];
+
+export const updateMechanicValidator = [
+  body('name')
+    .optional()
+    .trim()
+    .isLength({ min: 2 })
+    .withMessage('Name must be at least 2 characters'),
+  body('email')
+    .optional()
+    .trim()
+    .isEmail()
+    .withMessage('Invalid email format')
+    .normalizeEmail()
+    .custom(async (value, { req }) => {
+      const existing = await User.findOne({ email: value, _id: { $ne: req.params.id } });
+      if (existing) throw new Error('Email already in use');
+      return true;
+    }),
+  body('cedula')
+    .optional()
+    .trim()
+    .matches(/^[0-9]{6,10}$/)
+    .withMessage('Cedula must be 6-10 digits')
+    .custom(async (value, { req }) => {
+      const existing = await User.findOne({ cedula: value, _id: { $ne: req.params.id } });
+      if (existing) throw new Error('Cedula already in use');
+      return true;
+    }),
+  body('password')
+    .optional()
+    .trim()
+    .isLength({ min: 8 })
+    .withMessage('Password must be at least 8 characters'),
+  body('rol').optional().custom(() => { throw new Error('Role cannot be modified through this endpoint'); }),
+  body('isActive').optional().custom(() => { throw new Error('Use /fire or /rehire to change active status'); }),
 ];

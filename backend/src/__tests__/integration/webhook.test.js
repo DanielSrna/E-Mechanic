@@ -85,7 +85,7 @@ describe('Webhooks API', () => {
         .post('/api/webhooks')
         .set('Authorization', `Bearer ${adminToken}`)
         .send({ url: 'https://example.com/hook', events: ['invalid:event'] });
-      expect(res.status).toBe(500);
+      expect(res.status).toBe(400);
     });
   });
 
