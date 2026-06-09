@@ -317,4 +317,111 @@ describe('Orders API', () => {
       expect(Array.isArray(res.body.history)).toBe(true);
     });
   });
+
+  describe('Filtro de 3 meses', () => {
+    let recentOrderId;
+    let oldOrderId;
+
+    beforeEach(async () => {
+      const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+
+      const recent = await request(app)
+        .post('/api/orders')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          motorcycle: motorcycleId, mechanic: adminId,
+          entryReason: 'Orden reciente', scheduledDate: tomorrow,
+        });
+      recentOrderId = recent.body.order._id;
+
+      const oldDate = new Date();
+      oldDate.setMonth(oldDate.getMonth() - 6);
+      const old = await request(app)
+        .post('/api/orders')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          motorcycle: motorcycleId, mechanic: adminId,
+          entryReason: 'Orden antigua', scheduledDate: oldDate.toISOString().split('T')[0],
+        });
+      oldOrderId = old.body.order._id;
+
+      const Order = (await import('../../models/order.model.js')).default;
+      const mongoose = (await import('mongoose')).default;
+      await Order.collection.updateOne(
+        { _id: new mongoose.Types.ObjectId(oldOrderId) },
+        { $set: { createdAt: oldDate, updatedAt: oldDate } }
+      );
+    });
+
+    it('GET /api/orders por defecto excluye órdenes de más de 3 meses', async () => {
+      const res = await request(app)
+        .get('/api/orders')
+        .set('Authorization', `Bearer ${adminToken}`);
+      expect(res.status).toBe(200);
+      const ids = res.body.orders.map((o) => o._id);
+      expect(ids).toContain(recentOrderId);
+      expect(ids).not.toContain(oldOrderId);
+    });
+
+    it('GET /api/orders?all=true incluye órdenes antiguas', async () => {
+      const res = await request(app)
+        .get('/api/orders?all=true')
+        .set('Authorization', `Bearer ${adminToken}`);
+      expect(res.status).toBe(200);
+      const ids = res.body.orders.map((o) => o._id);
+      expect(ids).toContain(recentOrderId);
+      expect(ids).toContain(oldOrderId);
+    });
+  });
+
+  describe('Validación de campos en creación', () => {
+    const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+
+    it('rechaza serviceType inválido', async () => {
+      const res = await request(app)
+        .post('/api/orders')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          motorcycle: motorcycleId, mechanic: adminId,
+          entryReason: 'Test', serviceType: 'inexistente',
+          scheduledDate: tomorrow,
+        });
+      expect([400, 500]).toContain(res.status);
+    });
+
+    it('rechaza priority inválida', async () => {
+      const res = await request(app)
+        .post('/api/orders')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          motorcycle: motorcycleId, mechanic: adminId,
+          entryReason: 'Test', priority: 'extrema',
+          scheduledDate: tomorrow,
+        });
+      expect([400, 500]).toContain(res.status);
+    });
+
+    it('rechaza scheduledDate en formato inválido', async () => {
+      const res = await request(app)
+        .post('/api/orders')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          motorcycle: motorcycleId, mechanic: adminId,
+          entryReason: 'Test', scheduledDate: 'ayer',
+        });
+      expect([400, 500]).toContain(res.status);
+    });
+
+    it('crea orden sin scheduledDate (usa fecha actual por defecto)', async () => {
+      const res = await request(app)
+        .post('/api/orders')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          motorcycle: motorcycleId, mechanic: adminId,
+          entryReason: 'Sin fecha programada',
+        });
+      expect(res.status).toBe(201);
+      expect(res.body.order.scheduledDate).toBeDefined();
+    });
+  });
 });

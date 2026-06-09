@@ -43,6 +43,8 @@ router.route('/refresh-token').post(userController.refreshToken);
 router.route('/logout').post(userController.logout);
 router.route('/me').get(verifyToken, userController.getMe);
 
+router.route('/verify-email').get(userController.verifyEmail);
+
 router.use(verifyToken);
 
 router
@@ -90,7 +92,5 @@ router
       }
     }
   );
-
-router.route('/verify-email').get(userController.verifyEmail);
 
 export default router;
