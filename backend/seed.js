@@ -49,12 +49,13 @@ async function seed() {
   });
 
   console.log('👤 Creando mecánicos...');
-  const mechanics = await User.insertMany([
+  const mechanicsData = [
     { name: 'Carlos López', email: 'carlos@emechanic.com', cedula: '0987654321', password: 'mecanico123', rol: 'mecanico' },
     { name: 'María González', email: 'maria@emechanic.com', cedula: '1122334455', password: 'mecanico123', rol: 'mecanico' },
     { name: 'José Ramírez', email: 'jose@emechanic.com', cedula: '2233445566', password: 'mecanico123', rol: 'mecanico' },
     { name: 'Diana Torres', email: 'diana@emechanic.com', cedula: '3344556677', password: 'mecanico123', rol: 'mecanico' },
-  ]);
+  ];
+  const mechanics = await Promise.all(mechanicsData.map((d) => User.create(d)));
 
   console.log('👥 Creando clientes...');
   const clients = await Client.insertMany([
