@@ -61,7 +61,7 @@ export const login = async (req, res, next) => {
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: env.NODE_ENV === 'production' ? 'strict' : 'lax',
       maxAge: COOKIE_MAX_AGE,
     });
     logger.exito('Inicio de sesión exitoso');
@@ -120,7 +120,7 @@ export const refreshToken = async (req, res, next) => {
     res.cookie('refreshToken', tokens.refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: env.NODE_ENV === 'production' ? 'strict' : 'lax',
       maxAge: COOKIE_MAX_AGE,
     });
     logger.exito('Token refrescado exitosamente para usuario: %s', user.email);
@@ -146,7 +146,7 @@ export const logout = async (req, res, next) => {
     res.clearCookie('refreshToken', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: env.NODE_ENV === 'production' ? 'strict' : 'lax',
     });
     logger.exito('Sesión cerrada exitosamente');
     res.status(200).json({ message: 'Logged out successfully' });
