@@ -10,8 +10,6 @@ export const connectDB = async () => {
     minPoolSize: 2,
   });
 
-  mongoose.set('sanitizeFilter', true);
-
   mongoose.connection.on('error', (err) => {
     logger.fracaso('Error de conexión MongoDB: %s', err.message);
   });
