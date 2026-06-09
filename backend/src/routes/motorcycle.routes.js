@@ -1,8 +1,12 @@
 import express from 'express';
 const router = express.Router();
 import * as motorcycleController from '../controllers/motorcycle.controller.js';
+import Motorcycle from '../models/motorcycle.model.js';
+import logger from '../utils/logger.js';
 import { validate } from '../middlewares/validatorErrorHandler.js';
 import { verifyToken, requireRole } from '../middlewares/auth.middleware.js';
+import { uploadMultiple } from '../middlewares/upload.middleware.js';
+import { deleteFile } from '../services/storage.service.js';
 import {
   createMotorcycleValidator,
   updateMotorcycleValidator,
@@ -221,5 +225,55 @@ router
     validate,
     motorcycleController.getMotorcycleHistory
   );
+
+router.post(
+  '/:id/images',
+  requireRole('admin', 'mecanico'),
+  uploadMultiple('images', 5, 'motorcycles'),
+  async (req, res, next) => {
+    try {
+      const motorcycle = await Motorcycle.findById(req.params.id);
+      if (!motorcycle)
+        return res.status(404).json({ message: 'Motorcycle not found' });
+
+      const newImages = req.uploadedFileUrls || [];
+      motorcycle.images = [...motorcycle.images, ...newImages];
+      await motorcycle.save();
+
+      logger.exito('%d imágenes agregadas a moto %s', newImages.length, motorcycle.plate);
+      res.status(200).json({ message: 'Images uploaded', motorcycle });
+    } catch (error) {
+      logger.fracaso('Error al subir imágenes de moto: ', error);
+      next(error);
+    }
+  }
+);
+
+router.delete(
+  '/:id/images/:index',
+  requireRole('admin'),
+  async (req, res, next) => {
+    try {
+      const motorcycle = await Motorcycle.findById(req.params.id);
+      if (!motorcycle)
+        return res.status(404).json({ message: 'Motorcycle not found' });
+
+      const index = parseInt(req.params.index, 10);
+      if (index < 0 || index >= motorcycle.images.length) {
+        return res.status(400).json({ message: 'Invalid image index' });
+      }
+
+      const removed = motorcycle.images.splice(index, 1)[0];
+      await deleteFile(removed);
+      await motorcycle.save();
+
+      logger.exito('Imagen eliminada de moto %s', motorcycle.plate);
+      res.status(200).json({ message: 'Image deleted', motorcycle });
+    } catch (error) {
+      logger.fracaso('Error al eliminar imagen: ', error);
+      next(error);
+    }
+  }
+);
 
 export default router;

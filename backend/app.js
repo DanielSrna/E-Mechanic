@@ -21,8 +21,6 @@ import clientRoutes from './src/routes/client.routes.js';
 import motorcycleRoutes from './src/routes/motorcycle.routes.js';
 import orderRoutes from './src/routes/order.routes.js';
 import partRoutes from './src/routes/part.routes.js';
-import partUploadRoutes from './src/routes/part-upload.routes.js';
-import motoUploadRoutes from './src/routes/moto-upload.routes.js';
 import statsRoutes from './src/routes/stats.routes.js';
 import settingsRoutes from './src/routes/settings.routes.js';
 import exportRoutes from './src/routes/export.routes.js';
@@ -118,10 +116,8 @@ app.get('/', (req, res) => {
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/clients', clientRoutes);
-app.use('/api/motorcycles', motoUploadRoutes);
 app.use('/api/motorcycles', motorcycleRoutes);
 app.use('/api/orders', orderRoutes);
-app.use('/api/parts', partUploadRoutes);
 app.use('/api/parts', partRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/settings', settingsRoutes);
@@ -132,6 +128,16 @@ app.use('/api/notifications', notificationRoutes);
 
 // Manejador global de errores
 app.use((error, req, res, _next) => {
+  if (error.name === 'ValidationError') error.status = 400;
+  if (error.name === 'CastError') {
+    error.status = 400;
+    error.message = 'Invalid ID format';
+  }
+  if (error.code === 11000) {
+    error.status = 409;
+    error.message = `Duplicate value for ${Object.keys(error.keyValue || {})[0] || 'field'}`;
+  }
+
   // 1. EXTRAER EL STATUS: Si el error no tiene status, asumimos 500.
   const statusCode = error.status || 500;
 
