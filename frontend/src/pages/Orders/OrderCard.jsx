@@ -1,7 +1,7 @@
 import { Draggable } from '@hello-pangea/dnd';
 import { Link } from 'react-router-dom';
 import { GripVertical } from 'lucide-react';
-import { PRIORITY_CONFIG, SERVICE_TYPE_CONFIG } from './status';
+import { PRIORITY_CONFIG, SERVICE_TYPE_CONFIG } from '../../utils/status';
 
 export default function OrderCard({ order, index }) {
   const priority = PRIORITY_CONFIG[order.priority || 'normal'];

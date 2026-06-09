@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import api from '../../api/axios';
 import toast from 'react-hot-toast';
 import OrderKanban from './OrderKanban';
-import { statusLabel } from './status';
+import { statusLabel } from '../../utils/status';
 
 export default function OrderList() {
   const [orders, setOrders] = useState([]);

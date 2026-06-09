@@ -32,6 +32,7 @@ export default function Sidebar({ open, onClose, onRepeatTour }) {
         open ? 'translate-x-0' : '-translate-x-full'
       }`}
       style={{ background: settings?.secondaryColor || '#1e293b' }}
+      aria-label="Barra lateral"
     >
       <div className="p-5 border-b border-white/10 flex items-center gap-3">
         {settings?.logo ? (
@@ -43,7 +44,7 @@ export default function Sidebar({ open, onClose, onRepeatTour }) {
           {settings?.appName || 'E-Mechanic'}
         </span>
       </div>
-      <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto scrollbar-thin">
+      <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto scrollbar-thin" aria-label="Navegación principal">
         {visibleItems.map((item) => {
           const active =
             item.to === '/'
@@ -84,6 +85,7 @@ export default function Sidebar({ open, onClose, onRepeatTour }) {
           <button
             onClick={logout}
             className="flex-[7] py-2.5 rounded-lg text-sm font-medium transition bg-red-500/20 hover:bg-red-500/40 text-red-300 hover:text-white flex items-center justify-center gap-2"
+            aria-label="Cerrar sesión"
           >
             <LogOut className="w-4 h-4" />
             Cerrar sesión

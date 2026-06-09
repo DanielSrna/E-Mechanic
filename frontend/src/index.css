@@ -33,11 +33,6 @@ body {
 .dark .bg-emerald-50 { background-color: #064e3b; }
 .dark .bg-indigo-50 { background-color: #1e1b4b; }
 
-@media (max-width: 768px) {
-  .sidebar-open { transform: translateX(0); }
-  .sidebar-closed { transform: translateX(-100%); }
-}
-
 .scrollbar-thin::-webkit-scrollbar { width: 6px; }
 .scrollbar-thin::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
 

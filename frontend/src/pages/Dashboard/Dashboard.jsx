@@ -23,11 +23,11 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!isAdmin) return;
-    api.get('/stats/overview').then(r => setOverview(r.data)).catch(e => console.error(e));
-    api.get('/stats/revenue?period=monthly').then(r => setRevenue(r.data)).catch(e => console.error(e));
-    api.get('/stats/mechanic-productivity').then(r => setMechanics(r.data)).catch(e => console.error(e));
-    api.get('/stats/order-status-distribution').then(r => setStatusDist(r.data)).catch(e => console.error(e));
-    api.get('/stats/most-used-parts').then(r => setMostUsedParts(r.data)).catch(e => console.error(e));
+    api.get('/stats/overview').then(r => setOverview(r.data)).catch(() => {});
+    api.get('/stats/revenue?period=monthly').then(r => setRevenue(r.data)).catch(() => {});
+    api.get('/stats/mechanic-productivity').then(r => setMechanics(r.data)).catch(() => {});
+    api.get('/stats/order-status-distribution').then(r => setStatusDist(r.data)).catch(() => {});
+    api.get('/stats/most-used-parts').then(r => setMostUsedParts(r.data)).catch(() => {});
   }, [isAdmin]);
 
   if (!isAdmin) {

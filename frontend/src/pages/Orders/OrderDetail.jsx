@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import api from '../../api/axios';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
-import { ALL_STATUSES, statusLabel, statusColor } from './status.js';
+import { ALL_STATUSES, statusLabel, statusColor } from '../../utils/status.js';
 
 export default function OrderDetail() {
   const { id } = useParams();

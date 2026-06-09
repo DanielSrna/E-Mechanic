@@ -10,7 +10,7 @@ import {
   getColumnBorderColor,
   getColumnHeaderBg,
   statusLabel,
-} from './status';
+} from '../../utils/status';
 
 function isColumnEmpty(orders) {
   return !orders || orders.length === 0;

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../../api/axios';
 import { ArrowLeft } from 'lucide-react';
-import { statusLabel, statusColor } from '../Orders/status';
+import { statusLabel, statusColor } from '../../utils/status';
 
 export default function MotorcycleOrders() {
   const { id } = useParams();
