@@ -11,9 +11,9 @@ function drawHeader(doc, company) {
 
   if (company.logo) {
     try {
-      const logoPath = company.logo.startsWith('http') ? company.logo : null;
-      if (logoPath) {
-        doc.image(logoPath, 50, startY, { width: 50 });
+      // Solo archivos locales; URLs requieren descarga async (no soportado aún)
+      if (!company.logo.startsWith('http')) {
+        doc.image(company.logo, 50, startY, { width: 50 });
       }
     } catch {
       /* logo no disponible */

@@ -1,5 +1,5 @@
 import eventEmitter from '../eventEmitter.js';
-import { sendInvoiceEmail } from '../../services/email.service.js';
+import { sendStockAlertEmail } from '../../services/email.service.js';
 import Settings from '../../models/settings.model.js';
 import logger from '../../utils/logger.js';
 
@@ -20,26 +20,15 @@ eventEmitter.on(
         logger.proceso('Sin email de admin configurado. Alerta no enviada.');
         return;
       }
-      const result = await sendInvoiceEmail(
-        {
-          invoiceNumber: `STOCK-ALERT-${sku}`,
-          order: { _id: 'N/A', entryReason: 'Alerta automática de stock bajo' },
-          client: { name: 'Administrador' },
-          motorcycle: {
-            plate: sku,
-            brand: name,
-            model: `Stock: ${stock}/${minStock}`,
-          },
-          total: 0,
-          sentToEmail: adminEmail,
-          company: {
-            companyName:
-              settings.companyName || settings.appName || 'E-Mechanic',
-            primaryColor: settings.primaryColor || '#2563eb',
-          },
-        },
-        Buffer.from('Alerta de stock bajo')
-      );
+      const result = await sendStockAlertEmail({
+        sku,
+        name,
+        stock,
+        minStock,
+        adminEmail,
+        appName: settings.appName,
+        primaryColor: settings.primaryColor,
+      });
       if (result.success) {
         logger.exito('Alerta de stock bajo enviada a %s', adminEmail);
       }

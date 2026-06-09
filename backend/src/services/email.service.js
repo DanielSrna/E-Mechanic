@@ -206,6 +206,43 @@ export async function sendVerificationEmail(to, userName, token) {
   });
 }
 
+export async function sendStockAlertEmail({ sku, name, stock, minStock, adminEmail, appName, primaryColor }) {
+  logger.contexto('Enviando alerta de stock bajo: %s (%s)', name, sku);
+
+  if (!adminEmail) {
+    return { success: false, reason: 'no_admin_email' };
+  }
+
+  const displayName = appName || 'E-Mechanic';
+  const color = primaryColor || '#2563eb';
+
+  const html = `
+    <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden">
+      <div style="background:${color};color:white;padding:24px;text-align:center">
+        <h1 style="margin:0;font-size:24px">${displayName.toUpperCase()}</h1>
+        <p style="margin:4px 0 0;font-size:14px;opacity:0.9">Alerta de Inventario</p>
+      </div>
+      <div style="padding:24px">
+        <h2 style="color:#1e293b;margin:0 0 16px">⚠ Stock Bajo</h2>
+        <p style="color:#475569;margin:0 0 24px">
+          El repuesto <strong>${name}</strong> (SKU: ${sku}) ha alcanzado su nivel mínimo de stock.
+        </p>
+        <table style="width:100%;border-collapse:collapse;margin-bottom:24px;background:#fef2f2;border-radius:8px">
+          <tr><td style="padding:12px;color:#991b1b;font-weight:600">Stock actual</td><td style="padding:12px;text-align:right;font-weight:700;color:#991b1b">${stock}</td></tr>
+          <tr><td style="padding:12px;color:#991b1b">Stock mínimo</td><td style="padding:12px;text-align:right;color:#991b1b">${minStock}</td></tr>
+        </table>
+        <p style="color:#64748b;font-size:12px;margin:0">Revisa tu inventario y reabastece este repuesto lo antes posible.</p>
+      </div>
+    </div>
+  `;
+
+  return await sendEmail({
+    to: adminEmail,
+    subject: `[STOCK BAJO] ${name} — ${stock}/${minStock} unidades`,
+    html,
+  });
+}
+
 export async function verifySMTPConnection() {
   const transport = getSMTP();
   if (!transport) return false;
