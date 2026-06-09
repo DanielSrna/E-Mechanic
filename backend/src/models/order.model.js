@@ -184,6 +184,7 @@ const orderSchema = new mongoose.Schema(
 orderSchema.index({ status: 1 });
 orderSchema.index({ mechanic: 1 });
 orderSchema.index({ createdAt: -1 });
+orderSchema.index({ scheduledDate: 1 });
 
 const WorkOrder = mongoose.model('WorkOrder', orderSchema);
 export default WorkOrder;

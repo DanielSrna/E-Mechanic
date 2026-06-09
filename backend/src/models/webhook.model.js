@@ -49,5 +49,7 @@ const webhookSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+webhookSchema.index({ isActive: 1, events: 1 });
+
 const Webhook = mongoose.model('Webhook', webhookSchema);
 export default Webhook;

@@ -142,7 +142,7 @@ async function seed() {
   const now = new Date();
 
   // ── MARZO: 10 órdenes (históricas, todas cerradas o canceladas) ──
-  const marBase = new Date('2026-03-02');
+  const marBase = daysAgo(90);
   const marOrders = [
     createOrder({ reason: 'Mantenimiento general 5000km', type: 'complejo', days: 2, priority: 'normal', date: marBase, createdAt: marBase }, 0, 0, 0, 'entregada', true, { subtotalParts: 140000, subtotalLabor: 80000, labor: [{ description: 'Mano de obra mantenimiento', cost: 80000 }], partsUsed: [{ part: parts[0]._id, quantity: 1, unitPrice: 45000 }, { part: parts[3]._id, quantity: 1, unitPrice: 28000 }, { part: parts[2]._id, quantity: 1, unitPrice: 65000 }] }),
     createOrder({ reason: 'Cambio de aceite y filtro', type: 'rapido', days: 0.5, priority: 'normal', date: new Date('2026-03-05'), createdAt: new Date('2026-03-05') }, 1, 1, 1, 'entregada', true, { subtotalParts: 73000, subtotalLabor: 25000, labor: [{ description: 'Cambio de aceite', cost: 25000 }], partsUsed: [{ part: parts[0]._id, quantity: 1, unitPrice: 45000 }, { part: parts[3]._id, quantity: 1, unitPrice: 28000 }] }),
@@ -157,7 +157,7 @@ async function seed() {
   ];
 
   // ── ABRIL: 12 órdenes (8 cerradas, 4 en curso) ──
-  const aprBase = new Date('2026-04-01');
+  const aprBase = daysAgo(60);
   const aprOrders = [
     createOrder({ reason: 'Cambio de batería', type: 'rapido', days: 0.5, priority: 'alta', date: aprBase, createdAt: aprBase }, 0, 2, 2, 'entregada', true, { subtotalParts: 85000, subtotalLabor: 15000, labor: [{ description: 'Instalación batería', cost: 15000 }], partsUsed: [{ part: parts[10]._id, quantity: 1, unitPrice: 85000 }] }),
     createOrder({ reason: 'Moto no enciende — diagnóstico', type: 'complejo', days: 2, priority: 'urgente', date: new Date('2026-04-02'), createdAt: new Date('2026-04-02') }, 2, 4, 4, 'entregada', true, { subtotalParts: 110000, subtotalLabor: 100000, labor: [{ description: 'Diagnóstico eléctrico', cost: 50000 }, { description: 'Reparación sistema encendido', cost: 50000 }], partsUsed: [{ part: parts[5]._id, quantity: 2, unitPrice: 15000 }, { part: parts[10]._id, quantity: 1, unitPrice: 85000 }] }),
@@ -174,7 +174,7 @@ async function seed() {
   ];
 
   // ── MAYO (actual): 18 órdenes (varios estados) ──
-  const mayBase = new Date('2026-05-02');
+  const mayBase = daysAgo(30);
   const mayOrders = [
     createOrder({ reason: 'Cambio de pastillas traseras', type: 'rapido', days: 0.5, priority: 'normal', date: mayBase, createdAt: mayBase }, 0, 0, 0, 'entregada', true, { subtotalParts: 65000, subtotalLabor: 20000, labor: [{ description: 'Cambio de pastillas', cost: 20000 }], partsUsed: [{ part: parts[2]._id, quantity: 1, unitPrice: 65000 }] }),
     createOrder({ reason: 'Mantenimiento general 15000km', type: 'complejo', days: 2, priority: 'normal', date: new Date('2026-05-03'), createdAt: new Date('2026-05-03') }, 1, 3, 3, 'entregada', true, { subtotalParts: 188000, subtotalLabor: 95000, labor: [{ description: 'Revisión general', cost: 50000 }, { description: 'Ajuste de válvulas', cost: 45000 }], partsUsed: [{ part: parts[1]._id, quantity: 2, unitPrice: 40000 }, { part: parts[3]._id, quantity: 1, unitPrice: 28000 }, { part: parts[4]._id, quantity: 1, unitPrice: 35000 }, { part: parts[5]._id, quantity: 1, unitPrice: 15000 }] }),

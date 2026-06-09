@@ -69,5 +69,7 @@ partSchema.pre('save', function () {
   }
 });
 
+partSchema.index({ stock: 1, minStock: 1 });
+
 const Part = mongoose.model('Part', partSchema);
 export default Part;
