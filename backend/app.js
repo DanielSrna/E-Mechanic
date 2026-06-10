@@ -10,6 +10,7 @@ import logger from './src/utils/logger.js';
 import { env } from './src/config/env.config.js';
 import { swaggerSpec } from './src/config/swagger.config.js';
 import { generalLimiter } from './src/middlewares/rateLimiter.middleware.js';
+import mongoose from 'mongoose';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -106,10 +107,24 @@ if (env.NODE_ENV === 'development') {
 
 // Health check
 app.get('/', (req, res) => {
+  const dbState = mongoose.connection.readyState;
+  const dbStatus = dbState === 1 ? 'connected' : dbState === 2 ? 'connecting' : 'disconnected';
   res.status(200).json({
-    status: 'ok',
+    status: dbState === 1 ? 'ok' : 'degraded',
     timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
+    uptime: Math.round(process.uptime()),
+    db: dbStatus,
+  });
+});
+
+app.get('/api/health', (req, res) => {
+  const dbState = mongoose.connection.readyState;
+  const dbStatus = dbState === 1 ? 'connected' : dbState === 2 ? 'connecting' : 'disconnected';
+  res.status(dbState === 1 ? 200 : 503).json({
+    status: dbState === 1 ? 'ok' : 'degraded',
+    timestamp: new Date().toISOString(),
+    uptime: Math.round(process.uptime()),
+    db: dbStatus,
   });
 });
 

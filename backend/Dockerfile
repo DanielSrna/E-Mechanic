@@ -1,15 +1,12 @@
-FROM node:22-alpine
+FROM node:24-alpine
 
 WORKDIR /app
 
 COPY package*.json ./
-
-RUN npm ci --omit=dev
+RUN npm ci --production
 
 COPY . .
 
 EXPOSE 3000
-
-USER node
 
 CMD ["node", "server.js"]

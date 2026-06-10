@@ -15,8 +15,8 @@ const FROM = FROM_EMAIL ? `"${FROM_NAME}" <${FROM_EMAIL}>` : null;
 
 // ── Detector de proveedor ──
 function getProvider() {
-  if (env.RESEND_API_KEY) return 'resend';
   if (env.SMTP_HOST && env.SMTP_USER && env.SMTP_PASS) return 'smtp';
+  if (env.RESEND_API_KEY) return 'resend';
   return null;
 }
 
@@ -91,17 +91,36 @@ async function sendEmail({
 }) {
   const provider = getProvider();
 
-  if (provider === 'resend') {
-    try {
-      return await sendWithResend({ to, subject, html, attachments });
-    } catch (error) {
-      logger.fracaso('Resend falló, intentando SMTP: %s', error.message);
+  if (provider === 'smtp') {
+    const transport = getSMTP();
+    if (transport) {
+      try {
+        const info = await sendWithRetry(transport, {
+          from: FROM || 'E-Mechanic <no-reply@emechanic.com>',
+          to,
+          subject,
+          html,
+          attachments,
+          ...smtpMailOptions,
+        });
+        logger.exito('Email enviado via SMTP: %s', info.messageId);
+        return { success: true, messageId: info.messageId };
+      } catch (error) {
+        logger.fracaso('SMTP falló, intentando Resend: %s', error.message);
+      }
     }
   }
 
-  if (provider === 'smtp' || provider === null) {
+  if (provider === 'resend' || provider === null) {
+    if (env.RESEND_API_KEY) {
+      try {
+        return await sendWithResend({ to, subject, html, attachments });
+      } catch (error) {
+        logger.fracaso('Resend también falló: %s', error.message);
+      }
+    }
     const transport = getSMTP();
-    if (transport) {
+    if (transport && provider === null) {
       try {
         const info = await sendWithRetry(transport, {
           from: FROM || 'E-Mechanic <no-reply@emechanic.com>',
