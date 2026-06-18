@@ -2,13 +2,13 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
+import DemoBanner from '../components/DemoBanner';
 
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
-  const [banner, setBanner] = useState(true);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,40 +26,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-100 px-4">
-      {banner && (
-        <div className="fixed bottom-4 right-4 z-50 animate-float">
-          <div className="bg-slate-900/90 backdrop-blur rounded-xl px-4 py-3 shadow-lg max-w-[260px]">
-            <div className="flex items-start justify-between gap-2">
-              <p className="text-white/60 text-[10px] font-medium tracking-wide">
-                BIENVENIDO RECLUTADOR
-              </p>
-              <button
-                onClick={() => setBanner(false)}
-                className="text-white/40 hover:text-white/80 leading-none text-sm"
-              >
-                ✕
-              </button>
-            </div>
-            <p className="text-white/80 text-sm mt-1.5">
-              Usa estas credenciales:
-            </p>
-            <div className="mt-1.5 space-y-0.5">
-              <p className="text-xs text-white/50">
-                Admin:{' '}
-                <span className="text-white font-mono">admin@emechanic.com</span>
-                <span className="text-white/30 mx-1">/</span>
-                <span className="text-white font-mono">admin123</span>
-              </p>
-              <p className="text-xs text-white/50">
-                Mec:{' '}
-                <span className="text-white font-mono">carlos@emechanic.com</span>
-                <span className="text-white/30 mx-1">/</span>
-                <span className="text-white font-mono">mecanico123</span>
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+      {import.meta.env.VITE_DEMO_MODE !== 'false' && <DemoBanner />}
 
       <div className="w-full max-w-md">
         <div className="text-center mb-8">

@@ -1,6 +1,7 @@
 import { env } from './src/config/env.config.js';
 import logger from './src/utils/logger.js';
 import mongoose from 'mongoose';
+import cron from 'node-cron';
 import app from './app.js';
 import { connectDB } from './src/config/db.config.js';
 import './src/events/listeners/order.listeners.js';
@@ -32,6 +33,16 @@ try {
       env.NODE_ENV
     );
   });
+
+  if (env.DEMO_RESET_ENABLED === 'true') {
+    cron.schedule('0 * * * *', () => {
+      logger.proceso('Cron: Iniciando reset automático de datos demo...');
+      import('./seed.js').catch((e) =>
+        logger.fracaso('Cron: Error al resetear datos demo — %s', e.message)
+      );
+    });
+    logger.exito('Cron de reset demo configurado (cada hora)');
+  }
 
   process.on('SIGTERM', async () => {
     logger.proceso('SIGTERM recibido. Cerrando conexiones limpiamente...');

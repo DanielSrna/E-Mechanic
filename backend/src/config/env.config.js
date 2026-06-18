@@ -49,6 +49,7 @@ const envSchema = z.object({
   GCS_CLIENT_EMAIL: z.string().optional(),
   GCS_PRIVATE_KEY: z.string().optional(),
   REDIS_URL: z.string().optional(),
+  DEMO_RESET_ENABLED: z.string().optional(),
   SWAGGER_SERVER_URL: z.string().optional(),
 });
 

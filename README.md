@@ -1,95 +1,96 @@
 # E-Mechanic
 
-ERP para gestión integral de talleres de motocicletas.
+ERP para talleres de motocicletas — Express + React + MongoDB
+
+![Tests](https://github.com/DanielSrna/E-Mechanic/actions/workflows/test.yml/badge.svg)
+
+## Características
+
+- 🔐 Autenticación JWT con refresh token rotado + RBAC (admin/mecánico)
+- 📋 Tablero Kanban drag-and-drop para órdenes de trabajo
+- 📅 Calendario de capacidad del taller
+- 📦 Gestión de inventario con alertas de stock bajo
+- 📊 Dashboard con métricas y gráficos (Chart.js)
+- 🔔 Notificaciones en tiempo real
+- 📧 Facturas por email con PDF adjunto
+- 🛒 Webhooks con firma HMAC-SHA256
+- 🌗 Modo oscuro
+- 🎓 Tutorial interactivo (React Joyride)
 
 ## Stack
 
 | Capa | Tecnología |
 |---|---|
-| Backend | Node.js 22+ / Express 5 / Mongoose 9 |
-| Frontend | React 19 / Vite 8 / Tailwind CSS |
+| Backend | Node 24, Express 5, Mongoose 9 |
+| Frontend | React 19, Vite 8, Tailwind 4 |
 | Base de datos | MongoDB (Atlas o local) |
-| Auth | JWT (access + refresh tokens httpOnly) |
-| Testing | Jest + Supertest + MongoDB Memory Server |
-| Email | Nodemailer (Gmail, Outlook, SMTP genérico) |
-| Storage | Google Cloud Storage (opcional, fallback a local) |
-| PDF | pdfkit (facturas electrónicas) |
-| Dashboard | Chart.js (ingresos, productividad, estados) |
+| Email | Nodemailer + Gmail SMTP |
+| Tests | Jest 30 + Supertest + mongodb-memory-server |
 
-## Instalación rápida
+## Arranque rápido
 
 ```bash
+# 1. Clonar
 git clone https://github.com/DanielSrna/E-Mechanic.git
 cd E-Mechanic
 
-# Opción A: Docker (recomendado)
-cp backend/.env.example backend/.env
-# Editar backend/.env con tus datos
-docker compose -f docker-compose.dev.yml up -d
-docker compose -f docker-compose.dev.yml exec api npm run seed
-# Abrir http://localhost:3000/api-docs
+# 2. Backend
+cd backend
+cp .env.example .env   # Edita MONGODB_URL y JWT_SECRET
+npm install
+npm run seed:force
+npm run dev             # http://localhost:3000
 
-# Opción B: Manual
-cd backend && npm install && cp .env.example .env
-# Editar .env con tu MONGODB_URL
-npm run seed    # Datos demo + admin
-npm run dev     # Backend en :3000
-
-cd ../frontend && npm install
-npm run dev     # Frontend en :5173
+# 3. Frontend (otra terminal)
+cd frontend
+npm install
+npm run dev             # http://localhost:5173
 ```
 
-## Credenciales default (seed)
-
-| Rol | Email | Contraseña |
-|---|---|---|
-| Admin | admin@emechanic.com | admin123 |
-| Mecánico | carlos@emechanic.com | mecanico123 |
-| Mecánico | maria@emechanic.com | mecanico123 |
+**Credenciales demo:**
+- Admin: `admin@emechanic.com` / `admin123`
+- Mecánico: `carlos@emechanic.com` / `mecanico123`
 
 ## Scripts
 
-### Backend (`cd backend`)
+### Backend (`/backend`)
 
 | Comando | Descripción |
 |---|---|
 | `npm run dev` | Servidor con hot reload |
-| `npm start` | Servidor producción |
-| `npm run seed` | Poblar BD con datos demo |
 | `npm test` | Tests con cobertura |
+| `npm run test:ci` | Tests para CI (sin cobertura) |
 | `npm run lint` | ESLint |
+| `npm run seed` | Datos de prueba (40 órdenes) |
+| `npm run seed:force` | Borrar y recargar datos |
 
-### Frontend (`cd frontend`)
+### Frontend (`/frontend`)
 
 | Comando | Descripción |
 |---|---|
-| `npm run dev` | Dev server :5173 |
+| `npm run dev` | Servidor Vite (HMR) |
 | `npm run build` | Build producción |
-| `npm run preview` | Preview del build |
+| `npm run lint` | ESLint |
 
-## Variables de entorno
+## Docker
 
-Ver `backend/.env.example` para la lista completa.
-
-**Mínimas requeridas:**
-
-```env
-MONGODB_URL=mongodb+srv://...
-JWT_SECRET=<64 bytes aleatorios>
-JWT_REFRESH_SECRET=<64 bytes aleatorios>
-NODE_ENV=production
-FRONTEND_URL=https://tu-frontend.vercel.app
+```bash
+docker compose up -d
 ```
 
-**Opcionales:**
-- `SMTP_HOST/USER/PASS` — para enviar facturas por email
-- `GCS_PROJECT_ID/BUCKET_NAME/...` — para almacenar imágenes en Google Cloud
-- `STRIPE_SECRET_KEY` — para pagos (futuro)
+Esto levanta MongoDB, backend (:3000) y frontend (:80) en contenedores.
 
 ## Despliegue
 
-Ver `docs/deploy.md` para guías de Render, Railway y Vercel.
+Ver [docs/DEPLOY.md](docs/DEPLOY.md) para la guía paso a paso.
 
-## Licencia
+## API Docs
 
-MIT © 2026 Daniel Felipe Serna López
+Swagger disponible en `http://localhost:3000/api-docs` (solo desarrollo).
+
+## Tests
+
+```
+Test Suites: 14 passed, 14 total
+Tests:       133 passed, 133 total
+```

@@ -13,6 +13,7 @@
     "test": "node --experimental-vm-modules node_modules/.bin/jest --coverage",
     "test:watch": "node --experimental-vm-modules node_modules/.bin/jest --watch",
     "test:integration": "node --experimental-vm-modules node_modules/.bin/jest --testPathPattern='__tests__/integration/'",
+    "test:ci": "node --experimental-vm-modules node_modules/.bin/jest --no-coverage --ci",
     "seed": "node seed.js",
     "seed:force": "node seed.js --force",
     "setup": "node seed.js && echo '✅ Setup completo. npm run dev para arrancar'"
@@ -46,6 +47,7 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.6.1",
     "multer": "^2.1.1",
+    "node-cron": "^4.2.1",
     "nodemailer": "^8.0.7",
     "pdfkit": "^0.18.0",
     "resend": "^6.12.3",

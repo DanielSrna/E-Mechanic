@@ -12,6 +12,7 @@ export default [
     },
     rules: {
       'no-console': 'warn',
+      'no-empty': 'warn',
       'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       'prefer-const': 'error',
       eqeqeq: 'error',
