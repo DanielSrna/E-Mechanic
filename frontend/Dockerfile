@@ -2,6 +2,9 @@ FROM node:24-alpine AS builder
 
 WORKDIR /app
 
+ARG VITE_DEMO_MODE
+ENV VITE_DEMO_MODE=$VITE_DEMO_MODE
+
 COPY package*.json ./
 RUN npm ci
 

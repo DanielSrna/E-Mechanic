@@ -16,7 +16,8 @@
     "test:ci": "node --experimental-vm-modules node_modules/.bin/jest --no-coverage --ci",
     "seed": "node seed.js",
     "seed:force": "node seed.js --force",
-    "setup": "node seed.js && echo '✅ Setup completo. npm run dev para arrancar'"
+    "setup": "node seed.js && echo '✅ Setup completo. npm run dev para arrancar'",
+    "setup:prod": "node scripts/setup-prod.js"
   },
   "keywords": [],
   "author": "",

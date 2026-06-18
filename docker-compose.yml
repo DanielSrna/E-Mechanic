@@ -11,7 +11,10 @@ services:
     restart: unless-stopped
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        VITE_DEMO_MODE: "true"
     ports:
       - "80:80"
     depends_on:

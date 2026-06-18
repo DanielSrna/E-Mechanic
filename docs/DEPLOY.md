@@ -1,7 +1,32 @@
 # Guía de Despliegue 🚀
 
-> Tutorial paso a paso para poner E-Mechanic en producción.
-> Se asume que ya tienes el código en GitHub.
+> Elige tu método: Docker (local) o Vercel + Render (internet).
+
+---
+
+## Docker (rápido, local)
+
+```bash
+git clone https://github.com/DanielSrna/E-Mechanic.git
+cd E-Mechanic
+cp backend/.env.example backend/.env
+# Edita backend/.env:
+#   MONGODB_URL=mongodb://mongo:27017/e_mechanic
+#   JWT_SECRET=genera_un_secreto_de_64_bytes
+#   JWT_REFRESH_SECRET=genera_otro_secreto_de_64_bytes
+docker compose up -d
+# App en http://localhost, con datos demo y banner de reclutador
+```
+
+Para produccion con Docker:
+```bash
+docker compose up -d
+docker compose exec backend npm run setup:prod    # Solo 1 admin, sin datos demo
+```
+
+---
+
+## Despliegue en Internet (Vercel + Render)
 
 ---
 
@@ -41,7 +66,7 @@ NODE_ENV=production
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_USER=e.mechanic98@gmail.com
-SMTP_PASS=nyniqihlpxyguthx
+SMTP_PASS=tu-app-password-de-16-caracteres
 ```
 
 5. Health check: Render usará automáticamente `/api/health`
@@ -107,3 +132,18 @@ VITE_API_URL=https://emechanic-api.onrender.com
 - [ ] Cerrar una orden → llega email con factura PDF
 - [ ] Notificaciones funcionan (campanita en header)
 - [ ] Swagger: `https://emechanic-api.onrender.com/api-docs` (si NODE_ENV=development)
+
+---
+
+## Demo vs Producción
+
+**Demo** (banner + datos que se resetean cada hora):
+- Render env: `DEMO_RESET_ENABLED=true`, `NODE_ENV=development`
+- Vercel env: `VITE_DEMO_MODE=true`
+- Corre `npm run seed:force` una vez
+
+**Producción** (sin banner, sin datos demo):
+- Render env: `NODE_ENV=production` (NO agregues DEMO_RESET_ENABLED)
+- Vercel env: no pongas VITE_DEMO_MODE
+- Corre `npm run setup:prod` (1 admin, sin 40 órdenes)
+- Cambia credenciales del admin desde Configuración
