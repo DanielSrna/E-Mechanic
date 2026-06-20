@@ -3,7 +3,7 @@ import api from '../../api/axios';
 import toast from 'react-hot-toast';
 import { useSettings } from '../../context/SettingsContext';
 import { useAuth } from '../../context/AuthContext';
-import { Store } from 'lucide-react';
+import { Store, ChevronDown, ChevronUp } from 'lucide-react';
 
 export default function SettingsPage() {
   const { settings, updateSettings } = useSettings();
@@ -20,6 +20,8 @@ export default function SettingsPage() {
   const [newEmail, setNewEmail] = useState('');
   const [emailPassword, setEmailPassword] = useState('');
   const [changingEmail, setChangingEmail] = useState(false);
+  const [devOpen, setDevOpen] = useState(false);
+  const [devLoading, setDevLoading] = useState(false);
 
   useEffect(() => {
     if (settings) setLoading(false);
@@ -171,6 +173,45 @@ export default function SettingsPage() {
         className="settings-save w-full py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 disabled:opacity-50 transition">
         {saving ? 'Guardando...' : 'Guardar Configuración'}
       </button>
+
+      <div className="border-t border-slate-200 dark:border-slate-700 pt-4">
+        <button
+          onClick={() => setDevOpen(!devOpen)}
+          className="w-full flex items-center justify-between text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition"
+        >
+          <span>Solo para desarrolladores</span>
+          {devOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </button>
+        {devOpen && (
+          <div className="mt-3 space-y-2">
+            <button
+              onClick={async () => {
+                setDevLoading(true);
+                try { await api.post('/admin/seed-demo'); toast.success('Datos demo recargados'); }
+                catch { toast.error('Error al recargar'); }
+                setDevLoading(false);
+              }}
+              disabled={devLoading}
+              className="w-full py-2 rounded-lg border border-slate-300 dark:border-slate-600 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50"
+            >
+              Recargar datos demo
+            </button>
+            <button
+              onClick={async () => {
+                if (!confirm('¿Eliminar todos los datos demo? Solo se conservará el administrador y la configuración.')) return;
+                setDevLoading(true);
+                try { await api.post('/admin/clear-demo'); toast.success('Datos demo eliminados'); }
+                catch { toast.error('Error al limpiar'); }
+                setDevLoading(false);
+              }}
+              disabled={devLoading}
+              className="w-full py-2 rounded-lg border border-red-300 dark:border-red-700 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50"
+            >
+              Limpiar datos demo
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
