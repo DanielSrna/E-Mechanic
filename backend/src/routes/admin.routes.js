@@ -10,19 +10,21 @@ import Order from '../models/order.model.js';
 import Notification from '../models/notification.model.js';
 import logger from '../utils/logger.js';
 
-router.use(verifyToken);
-router.use(requireRole('admin'));
-
+// Público: permite poblar la BD sin autenticación
 router.post('/seed-demo', async (req, res, next) => {
   try {
-    const { default: seed } = await import('../../seed.js');
-    logger.exito('Seed ejecutado manualmente por admin');
+    await import('../../seed.js');
+    logger.exito('Seed ejecutado vía endpoint público');
     res.status(200).json({ message: 'Datos demo recargados' });
   } catch (error) {
-    logger.fracaso('Error ejecutando seed manual: %s', error.message);
+    logger.fracaso('Error ejecutando seed: %s', error.message);
     next(error);
   }
 });
+
+// Protegido: solo admins autenticados pueden limpiar
+router.use(verifyToken);
+router.use(requireRole('admin'));
 
 router.post('/clear-demo', async (req, res, next) => {
   try {
