@@ -4,6 +4,8 @@ import mongoose from 'mongoose';
 import cron from 'node-cron';
 import app from './app.js';
 import { connectDB } from './src/config/db.config.js';
+import User from './src/models/user.model.js';
+import Settings from './src/models/settings.model.js';
 import './src/events/listeners/order.listeners.js';
 import './src/events/listeners/stock.listeners.js';
 import './src/events/listeners/webhook.listeners.js';
@@ -25,6 +27,20 @@ try {
   logger.proceso('Iniciando la conexión a la base de datos...');
   await connectDB();
   logger.exito('Conexión a MongoDB Atlas establecida.');
+
+  const adminExists = await User.findOne({ rol: 'admin' });
+  if (!adminExists) {
+    logger.proceso('Admin no encontrado. Creando administrador inicial...');
+    await User.create({
+      name: 'Administrador',
+      email: 'admin@emechanic.com',
+      cedula: '1234567890',
+      password: 'admin123',
+      rol: 'admin',
+    });
+    await Settings.getSettings();
+    logger.exito('Administrador inicial creado.');
+  }
 
   const server = app.listen(PORT, '0.0.0.0', () => {
     logger.exito(
